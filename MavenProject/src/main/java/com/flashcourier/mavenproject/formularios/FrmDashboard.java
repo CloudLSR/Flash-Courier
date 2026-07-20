@@ -68,8 +68,7 @@ public class FrmDashboard extends JFrame {
         panelBotones.add(btnActualizar, bgc);
 
         JButton btnConfirmar = crearBoton("Confirmar Entrega", "confirmar_entrega.png");
-        btnConfirmar.addActionListener(e -> JOptionPane.showMessageDialog(this,
-                "Pantalla en construccion", "Proximamente", JOptionPane.INFORMATION_MESSAGE));
+        btnConfirmar.addActionListener(e -> abrir(new FrmConfirmarEntrega()));
         bgc.gridy = 3;
         panelBotones.add(btnConfirmar, bgc);
 
