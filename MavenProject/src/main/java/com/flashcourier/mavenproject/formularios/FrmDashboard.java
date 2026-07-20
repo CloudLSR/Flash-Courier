@@ -63,8 +63,7 @@ public class FrmDashboard extends JFrame {
         panelBotones.add(btnConsultar, bgc);
 
         JButton btnActualizar = crearBoton("Actualizar Estado", "actualizar_estado.png");
-        btnActualizar.addActionListener(e -> JOptionPane.showMessageDialog(this,
-                "Pantalla en construccion", "Proximamente", JOptionPane.INFORMATION_MESSAGE));
+        btnActualizar.addActionListener(e -> abrir(new FrmActualizarEstado()));
         bgc.gridy = 2;
         panelBotones.add(btnActualizar, bgc);
 
