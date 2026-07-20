@@ -72,6 +72,9 @@ public class FrmLogin extends JFrame {
 
         btnIngresar.addActionListener(e -> ingresar());
         txtContrasena.addActionListener(e -> ingresar());
+        
+        txtCorreo.setText("admin@flashcourier.pe");
+        txtContrasena.setText("admin");
     }
 
     private void ingresar() {
@@ -86,11 +89,8 @@ public class FrmLogin extends JFrame {
         try {
             Usuario usuario = usuarioDAO.validarCredenciales(correo, contrasena);
             if (usuario != null) {
-                JOptionPane.showMessageDialog(this,
-                        "Bienvenido " + usuario.getNombre() + " (" + usuario.getRol() + ")",
-                        "Inicio de Sesion Exitoso",
-                        JOptionPane.INFORMATION_MESSAGE);
                 dispose();
+                SwingUtilities.invokeLater(() -> new FrmDashboard(usuario).setVisible(true));
             } else {
                 lblMensaje.setText("Credenciales incorrectas");
                 txtContrasena.setText("");
