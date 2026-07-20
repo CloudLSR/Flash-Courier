@@ -4,13 +4,21 @@
 
 package com.flashcourier.mavenproject;
 
+import com.flashcourier.mavenproject.formularios.FrmLogin;
+
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
 /**
  *
  * @author JoseLSR
  */
 public class Main {
-
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ignored) {
+        }
+        SwingUtilities.invokeLater(() -> new FrmLogin().setVisible(true));
     }
 }
