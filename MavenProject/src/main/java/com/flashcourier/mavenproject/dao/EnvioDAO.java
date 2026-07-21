@@ -13,6 +13,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -154,6 +156,41 @@ public class EnvioDAO {
                 con.close();
             }
         }
+    }
+
+    public List<Envio> listarTodos() throws SQLException {
+        List<Envio> lista = new ArrayList<>();
+        String sql = "SELECT e.id_envio, e.codigo_tracking, e.fecha_registro, e.estado, "
+                   + "e.direccion_destino, e.costo, "
+                   + "r.nombres AS nombre_remitente, d.nombres AS nombre_destinatario, "
+                   + "p.peso, p.dimensiones, "
+                   + "c.nombre AS nombre_courier "
+                   + "FROM envio e "
+                   + "JOIN cliente r ON e.id_remitente = r.id_cliente "
+                   + "JOIN cliente d ON e.id_destinatario = d.id_cliente "
+                   + "JOIN paquete p ON e.id_paquete = p.id_paquete "
+                   + "LEFT JOIN courier c ON e.id_courier = c.id_courier "
+                   + "ORDER BY e.fecha_registro DESC";
+        try (Connection con = ConexionDB.getInstancia().getConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Envio e = new Envio();
+                e.setIdEnvio(rs.getInt("id_envio"));
+                e.setCodigoTracking(rs.getString("codigo_tracking"));
+                e.setFechaRegistro(rs.getTimestamp("fecha_registro"));
+                e.setEstado(rs.getString("estado"));
+                e.setDireccionDestino(rs.getString("direccion_destino"));
+                e.setCosto(rs.getDouble("costo"));
+                e.setNombreRemitente(rs.getString("nombre_remitente"));
+                e.setNombreDestinatario(rs.getString("nombre_destinatario"));
+                e.setPeso(rs.getDouble("peso"));
+                e.setDimensiones(rs.getString("dimensiones"));
+                e.setNombreCourier(rs.getString("nombre_courier"));
+                lista.add(e);
+            }
+        }
+        return lista;
     }
 
     /** Busca un envio por su ID interno (usado por las pantallas de actualizar estado / confirmar entrega). */

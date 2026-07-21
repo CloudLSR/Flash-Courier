@@ -28,6 +28,7 @@ public class Envio {
     private String nombreDestinatario;
     private double peso;
     private String dimensiones;
+    private String nombreCourier;
 
     public int getIdEnvio() { return idEnvio; }
     public void setIdEnvio(int idEnvio) { this.idEnvio = idEnvio; }
@@ -57,4 +58,6 @@ public class Envio {
     public void setPeso(double peso) { this.peso = peso; }
     public String getDimensiones() { return dimensiones; }
     public void setDimensiones(String dimensiones) { this.dimensiones = dimensiones; }
+    public String getNombreCourier() { return nombreCourier; }
+    public void setNombreCourier(String nombreCourier) { this.nombreCourier = nombreCourier; }
 }

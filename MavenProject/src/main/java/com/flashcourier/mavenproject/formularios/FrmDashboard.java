@@ -61,16 +61,16 @@ public class FrmDashboard extends JFrame {
         btnConsultar.addActionListener(e -> abrir(new FrmConsultarTracking()));
         bgc.gridy = 1;
         panelBotones.add(btnConsultar, bgc);
-
+        
         JButton btnActualizar = crearBoton("Actualizar Estado", "actualizar_estado.png");
         btnActualizar.addActionListener(e -> abrir(new FrmActualizarEstado()));
         bgc.gridy = 2;
         panelBotones.add(btnActualizar, bgc);
 
-        JButton btnConfirmar = crearBoton("Confirmar Entrega", "confirmar_entrega.png");
-        btnConfirmar.addActionListener(e -> abrir(new FrmConfirmarEntrega()));
+        JButton btnListar = crearBoton("Lista de Envios", "lista_envios.png");
+        btnListar.addActionListener(e -> abrir(new FrmListarEnvios()));
         bgc.gridy = 3;
-        panelBotones.add(btnConfirmar, bgc);
+        panelBotones.add(btnListar, bgc);
 
         main.add(panelBotones, BorderLayout.CENTER);
 
