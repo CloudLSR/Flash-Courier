@@ -77,4 +77,8 @@ public class EnvioControlador {
     public Envio buscarPorId(int idEnvio) throws SQLException {
         return envioDAO.buscarPorId(idEnvio);
     }
+
+    public List<Envio> listarEnvios() throws SQLException {
+        return envioDAO.listarTodos();
+    }
 }
