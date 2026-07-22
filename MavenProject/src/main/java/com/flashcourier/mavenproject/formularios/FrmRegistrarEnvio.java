@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
 package com.flashcourier.mavenproject.formularios;
 
 import com.flashcourier.mavenproject.controlador.CourierFacade;
@@ -7,263 +11,164 @@ import com.flashcourier.mavenproject.modelo.Paquete;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.sql.SQLException;
 
+/**
+ *
+ * @author JoseLSR
+ */
 public class FrmRegistrarEnvio extends JFrame {
 
     private final CourierFacade facade = new CourierFacade();
 
-    private final JTextField txtRemNombres = new JTextField(20);
-    private final JTextField txtRemDni = new JTextField(15);
-    private final JTextField txtRemTelefono = new JTextField(15);
-    private final JTextField txtRemDireccion = new JTextField(20);
+    // Remitente
+    private final JTextField txtRemNombres = new JTextField(18);
+    private final JTextField txtRemDni = new JTextField(18);
+    private final JTextField txtRemTelefono = new JTextField(18);
+    private final JTextField txtRemDireccion = new JTextField(18);
 
-    private final JTextField txtDesNombres = new JTextField(20);
-    private final JTextField txtDesDni = new JTextField(15);
-    private final JTextField txtDesTelefono = new JTextField(15);
-    private final JTextField txtDesDireccion = new JTextField(20);
+    // Destinatario
+    private final JTextField txtDestNombres = new JTextField(18);
+    private final JTextField txtDestDni = new JTextField(18);
+    private final JTextField txtDestTelefono = new JTextField(18);
+    private final JTextField txtDestDireccion = new JTextField(18);
 
-    private final JTextField txtPeso = new JTextField(10);
-    private final JTextField txtDimensiones = new JTextField(15);
-    private final JTextField txtDescripcion = new JTextField(20);
-
-    private final JTextField txtDirDestino = new JTextField(20);
-    private final JTextField txtTracking = new JTextField(15);
-    private final JTextField txtCosto = new JTextField(10);
-
-    private final JLabel lblMensaje = new JLabel(" ");
+    // Paquete
+    private final JTextField txtPeso = new JTextField(8);
+    private final JTextField txtDimensiones = new JTextField(12);
+    private final JTextField txtDescripcion = new JTextField(18);
 
     public FrmRegistrarEnvio() {
-        setTitle("Flash Courier - Registrar Envio");
+        setTitle("Registrar Envio - Flash Courier");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(600, 650);
+        setSize(520, 560);
         setLocationRelativeTo(null);
-        setResizable(false);
 
-        JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(3, 5, 3, 5);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
-        int row = 0;
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.gridwidth = 2;
-        JLabel lblTitulo = new JLabel("REGISTRAR ENVIO", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("SansSerif", Font.BOLD, 18));
-        mainPanel.add(lblTitulo, gbc);
+        panel.add(seccion("Datos del Remitente",
+                new String[]{"Nombres:", "DNI:", "Telefono:", "Direccion:"},
+                new JTextField[]{txtRemNombres, txtRemDni, txtRemTelefono, txtRemDireccion}));
 
-        row++;
-        gbc.gridy = row;
-        gbc.gridwidth = 2;
-        JPanel panelRem = crearPanelCliente("Remitente", txtRemNombres, txtRemDni, txtRemTelefono, txtRemDireccion);
-        mainPanel.add(panelRem, gbc);
+        panel.add(Box.createVerticalStrut(10));
 
-        row++;
-        gbc.gridy = row;
-        JPanel panelDes = crearPanelCliente("Destinatario", txtDesNombres, txtDesDni, txtDesTelefono, txtDesDireccion);
-        mainPanel.add(panelDes, gbc);
+        panel.add(seccion("Datos del Destinatario",
+                new String[]{"Nombres:", "DNI:", "Telefono:", "Direccion de entrega:"},
+                new JTextField[]{txtDestNombres, txtDestDni, txtDestTelefono, txtDestDireccion}));
 
-        row++;
-        gbc.gridy = row;
-        JPanel panelPaq = crearPanelPaquete();
-        mainPanel.add(panelPaq, gbc);
+        panel.add(Box.createVerticalStrut(10));
 
-        row++;
-        gbc.gridy = row;
-        JPanel panelConf = crearPanelConfiguracion();
-        mainPanel.add(panelConf, gbc);
+        panel.add(seccion("Datos del Paquete",
+                new String[]{"Peso (kg):", "Dimensiones:", "Descripcion:"},
+                new JTextField[]{txtPeso, txtDimensiones, txtDescripcion}));
 
-        row++;
-        gbc.gridy = row;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
         JButton btnRegistrar = new JButton("Registrar Envio");
-        btnRegistrar.setFont(new Font("SansSerif", Font.BOLD, 14));
+        btnRegistrar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(Box.createVerticalStrut(15));
+        panel.add(btnRegistrar);
+
+        JScrollPane scroll = new JScrollPane(panel);
+        scroll.getVerticalScrollBar().setUnitIncrement(16);
+        add(scroll);
+
         btnRegistrar.addActionListener(e -> registrar());
-        mainPanel.add(btnRegistrar, gbc);
-
-        row++;
-        gbc.gridy = row;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        lblMensaje.setForeground(Color.RED);
-        lblMensaje.setHorizontalAlignment(SwingConstants.CENTER);
-        mainPanel.add(lblMensaje, gbc);
-
-        add(mainPanel);
-
-        txtPeso.addActionListener(e -> calcularCosto());
-        generarTracking();
     }
 
-    private JPanel crearPanelCliente(String titulo, JTextField txtNom, JTextField txtDni,
-                                      JTextField txtTel, JTextField txtDir) {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createTitledBorder(titulo));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(2, 5, 2, 5);
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel("Nombres:"), gbc);
-        gbc.gridx = 1;
-        panel.add(txtNom, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(new JLabel("DNI:"), gbc);
-        gbc.gridx = 1;
-        panel.add(txtDni, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panel.add(new JLabel("Telefono:"), gbc);
-        gbc.gridx = 1;
-        panel.add(txtTel, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        panel.add(new JLabel("Direccion:"), gbc);
-        gbc.gridx = 1;
-        panel.add(txtDir, gbc);
-
-        return panel;
-    }
-
-    private JPanel crearPanelPaquete() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createTitledBorder("Paquete"));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(2, 5, 2, 5);
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel("Peso (kg):"), gbc);
-        gbc.gridx = 1;
-        panel.add(txtPeso, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(new JLabel("Dimensiones:"), gbc);
-        gbc.gridx = 1;
-        panel.add(txtDimensiones, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panel.add(new JLabel("Descripcion:"), gbc);
-        gbc.gridx = 1;
-        panel.add(txtDescripcion, gbc);
-
-        return panel;
-    }
-
-    private JPanel crearPanelConfiguracion() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createTitledBorder("Configuracion del Envio"));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(2, 5, 2, 5);
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel("Direccion Destino:"), gbc);
-        gbc.gridx = 1;
-        panel.add(txtDirDestino, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(new JLabel("Codigo Tracking:"), gbc);
-        gbc.gridx = 1;
-        txtTracking.setEditable(false);
-        txtTracking.setBackground(Color.WHITE);
-        panel.add(txtTracking, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panel.add(new JLabel("Costo (S/):"), gbc);
-        gbc.gridx = 1;
-        txtCosto.setEditable(false);
-        txtCosto.setBackground(Color.WHITE);
-        panel.add(txtCosto, gbc);
-
-        return panel;
-    }
-
-    private void generarTracking() {
-        txtTracking.setText(facade.envios().generarCodigoTracking());
-    }
-
-    private void calcularCosto() {
-        try {
-            double peso = Double.parseDouble(txtPeso.getText().trim());
-            double costo = facade.envios().calcularCosto(peso);
-            txtCosto.setText(String.format("%.2f", costo));
-        } catch (NumberFormatException e) {
-            txtCosto.setText("");
+    private JPanel seccion(String titulo, String[] etiquetas, JTextField[] campos) {
+        JPanel seccionPanel = new JPanel(new GridLayout(etiquetas.length, 2, 5, 5));
+        seccionPanel.setBorder(BorderFactory.createTitledBorder(titulo));
+        for (int i = 0; i < etiquetas.length; i++) {
+            seccionPanel.add(new JLabel(etiquetas[i]));
+            seccionPanel.add(campos[i]);
         }
+        return seccionPanel;
     }
 
     private void registrar() {
         try {
-            String remNombres = txtRemNombres.getText().trim();
-            String remDni = txtRemDni.getText().trim();
-            String remTel = txtRemTelefono.getText().trim();
-            String remDir = txtRemDireccion.getText().trim();
-
-            String desNombres = txtDesNombres.getText().trim();
-            String desDni = txtDesDni.getText().trim();
-            String desTel = txtDesTelefono.getText().trim();
-            String desDir = txtDesDireccion.getText().trim();
-
-            String pesoStr = txtPeso.getText().trim();
-            String dimensiones = txtDimensiones.getText().trim();
-            String descripcion = txtDescripcion.getText().trim();
-
-            String dirDestino = txtDirDestino.getText().trim();
-
-            if (remNombres.isEmpty() || remDni.isEmpty() || desNombres.isEmpty() || desDni.isEmpty()
-                    || pesoStr.isEmpty() || dirDestino.isEmpty()) {
-                lblMensaje.setText("Complete los campos obligatorios (*)");
+            if (txtRemNombres.getText().isBlank() || txtDestNombres.getText().isBlank() || txtPeso.getText().isBlank()) {
+                JOptionPane.showMessageDialog(this, "Completa al menos nombres del remitente, destinatario y el peso.",
+                        "Datos incompletos", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            double peso = Double.parseDouble(pesoStr);
+            double peso;
+            try {
+                peso = Double.parseDouble(txtPeso.getText().trim());
+            } catch (NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(this, "El peso debe ser un numero valido.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-            Cliente remitente = new Cliente(remNombres, remDni, remTel, remDir);
-            Cliente destinatario = new Cliente(desNombres, desDni, desTel, desDir);
-            Paquete paquete = new Paquete(peso, dimensiones, descripcion);
+            Cliente remitente = new Cliente(txtRemNombres.getText().trim(), txtRemDni.getText().trim(),
+                    txtRemTelefono.getText().trim(), txtRemDireccion.getText().trim());
+            Cliente destinatario = new Cliente(txtDestNombres.getText().trim(), txtDestDni.getText().trim(),
+                    txtDestTelefono.getText().trim(), txtDestDireccion.getText().trim());
+            Paquete paquete = new Paquete(peso, txtDimensiones.getText().trim(), txtDescripcion.getText().trim());
 
-            Envio envio = facade.envios().registrarEnvio(remitente, destinatario, paquete, dirDestino);
+            Envio envio = facade.envios().registrarEnvio(remitente, destinatario, paquete, txtDestDireccion.getText().trim());
 
-            JOptionPane.showMessageDialog(this,
-                    "Envio registrado exitosamente!\n"
-                    + "Tracking: " + envio.getCodigoTracking() + "\n"
-                    + "Costo: S/ " + String.format("%.2f", envio.getCosto()),
-                    "Registro Exitoso",
-                    JOptionPane.INFORMATION_MESSAGE);
+            mostrarResultado(envio);
+            dispose();
 
-            limpiar();
-            generarTracking();
-
-        } catch (NumberFormatException e) {
-            lblMensaje.setText("Peso invalido, ingrese un numero");
-        } catch (SQLException e) {
-            lblMensaje.setText("Error al registrar: " + e.getMessage());
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al registrar el envio:\n" + ex.getMessage(),
+                    "Error de base de datos", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void limpiar() {
-        for (JTextField tf : new JTextField[]{
-                txtRemNombres, txtRemDni, txtRemTelefono, txtRemDireccion,
-                txtDesNombres, txtDesDni, txtDesTelefono, txtDesDireccion,
-                txtPeso, txtDimensiones, txtDescripcion, txtDirDestino
-        }) {
-            tf.setText("");
-        }
-        txtCosto.setText("");
-        lblMensaje.setText(" ");
+    /** Dialogo de exito con el codigo de tracking en un campo de solo lectura y un boton para copiarlo. */
+    private void mostrarResultado(Envio envio) {
+        JDialog dialogo = new JDialog(this, "Registro exitoso", true);
+        dialogo.setSize(380, 220);
+        dialogo.setLocationRelativeTo(this);
+        dialogo.setResizable(false);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel lblOk = new JLabel("Envio registrado correctamente.");
+        lblOk.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(lblOk);
+        panel.add(Box.createVerticalStrut(15));
+
+        JLabel lblEtiquetaCodigo = new JLabel("Codigo de seguimiento:");
+        lblEtiquetaCodigo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(lblEtiquetaCodigo);
+        panel.add(Box.createVerticalStrut(5));
+
+        JPanel panelCodigo = new JPanel(new BorderLayout(5, 0));
+        JTextField txtCodigo = new JTextField(envio.getCodigoTracking());
+        txtCodigo.setEditable(false);
+        txtCodigo.setHorizontalAlignment(JTextField.CENTER);
+        txtCodigo.setFont(new Font("Monospaced", Font.BOLD, 14));
+        JButton btnCopiar = new JButton("Copiar");
+        btnCopiar.addActionListener(e -> {
+            StringSelection seleccion = new StringSelection(envio.getCodigoTracking());
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(seleccion, null);
+            btnCopiar.setText("Copiado!");
+        });
+        panelCodigo.add(txtCodigo, BorderLayout.CENTER);
+        panelCodigo.add(btnCopiar, BorderLayout.EAST);
+        panelCodigo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(panelCodigo);
+        panel.add(Box.createVerticalStrut(15));
+
+        JLabel lblCosto = new JLabel("Costo calculado: S/ " + String.format("%.2f", envio.getCosto()));
+        lblCosto.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(lblCosto);
+        panel.add(Box.createVerticalStrut(15));
+
+        JButton btnCerrar = new JButton("Cerrar");
+        btnCerrar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnCerrar.addActionListener(e -> dialogo.dispose());
+        panel.add(btnCerrar);
+
+        dialogo.add(panel);
+        dialogo.setVisible(true);
     }
 }

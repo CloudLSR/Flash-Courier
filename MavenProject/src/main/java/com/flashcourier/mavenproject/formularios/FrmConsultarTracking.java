@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
 package com.flashcourier.mavenproject.formularios;
 
 import com.flashcourier.mavenproject.controlador.CourierFacade;
@@ -8,222 +12,95 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
+/**
+ *
+ * @author JoseLSR
+ */
 public class FrmConsultarTracking extends JFrame {
 
     private final CourierFacade facade = new CourierFacade();
-    private final JTextField txtTracking = new JTextField(15);
-    private final JLabel lblMensaje = new JLabel(" ");
-
+    private final JTextField txtCodigo = new JTextField(20);
     private final JLabel lblEstado = new JLabel("-");
-    private final JLabel lblFecha = new JLabel("-");
-    private final JLabel lblCosto = new JLabel("-");
     private final JLabel lblRemitente = new JLabel("-");
     private final JLabel lblDestinatario = new JLabel("-");
-    private final JLabel lblPeso = new JLabel("-");
-    private final JLabel lblDimensiones = new JLabel("-");
-    private final JLabel lblDirDestino = new JLabel("-");
-    private final JLabel lblCourier = new JLabel("-");
-
-    private final JTable tblHistorial = new JTable();
-    private final DefaultTableModel modelHistorial = new DefaultTableModel(
-            new String[]{"Fecha/Hora", "Estado", "Observacion"}, 0
-    );
+    private final JLabel lblDestino = new JLabel("-");
+    private final JLabel lblCosto = new JLabel("-");
+    private final DefaultTableModel modeloTabla = new DefaultTableModel(
+            new Object[]{"Estado", "Fecha y Hora", "Observacion"}, 0);
 
     public FrmConsultarTracking() {
-        setTitle("Flash Courier - Consultar Tracking");
+        setTitle("Consultar Tracking - Flash Courier");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(650, 550);
+        setSize(560, 480);
         setLocationRelativeTo(null);
-        setResizable(false);
 
-        JPanel main = new JPanel(new BorderLayout(10, 10));
-        main.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelBusqueda.add(new JLabel("Codigo de seguimiento:"));
+        panelBusqueda.add(txtCodigo);
+        JButton btnBuscar = new JButton("Consultar");
+        panelBusqueda.add(btnBuscar);
 
-        main.add(crearPanelBusqueda(), BorderLayout.NORTH);
-        main.add(crearPanelResultados(), BorderLayout.CENTER);
+        JPanel panelInfo = new JPanel(new GridLayout(5, 2, 5, 5));
+        panelInfo.setBorder(BorderFactory.createTitledBorder("Informacion del Envio"));
+        panelInfo.add(new JLabel("Estado actual:")); panelInfo.add(lblEstado);
+        panelInfo.add(new JLabel("Remitente:")); panelInfo.add(lblRemitente);
+        panelInfo.add(new JLabel("Destinatario:")); panelInfo.add(lblDestinatario);
+        panelInfo.add(new JLabel("Direccion destino:")); panelInfo.add(lblDestino);
+        panelInfo.add(new JLabel("Costo:")); panelInfo.add(lblCosto);
 
-        add(main);
-    }
+        JTable tabla = new JTable(modeloTabla);
+        JScrollPane scrollTabla = new JScrollPane(tabla);
+        scrollTabla.setBorder(BorderFactory.createTitledBorder("Historial de Movimientos"));
 
-    private JPanel crearPanelBusqueda() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        JPanel centro = new JPanel(new BorderLayout(5, 5));
+        centro.add(panelInfo, BorderLayout.NORTH);
+        centro.add(scrollTabla, BorderLayout.CENTER);
 
-        JLabel lblTitulo = new JLabel("CONSULTAR TRACKING", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("SansSerif", Font.BOLD, 18));
+        add(panelBusqueda, BorderLayout.NORTH);
+        add(centro, BorderLayout.CENTER);
 
-        JPanel busqueda = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
-        busqueda.add(new JLabel("Codigo Tracking:"));
-        busqueda.add(txtTracking);
-
-        JButton btnConsultar = new JButton("Consultar");
-        btnConsultar.addActionListener(e -> consultar());
-        busqueda.add(btnConsultar);
-
-        txtTracking.addActionListener(e -> consultar());
-
-        JPanel contenedor = new JPanel(new BorderLayout());
-        contenedor.add(lblTitulo, BorderLayout.NORTH);
-        contenedor.add(busqueda, BorderLayout.CENTER);
-        lblMensaje.setForeground(Color.RED);
-        lblMensaje.setHorizontalAlignment(SwingConstants.CENTER);
-        contenedor.add(lblMensaje, BorderLayout.SOUTH);
-
-        panel.add(contenedor);
-        return panel;
-    }
-
-    private JPanel crearPanelResultados() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(3, 5, 3, 5);
-
-        int row = 0;
-
-        JPanel infoEnvio = new JPanel(new GridBagLayout());
-        infoEnvio.setBorder(BorderFactory.createTitledBorder("Datos del Envio"));
-        GridBagConstraints igbc = new GridBagConstraints();
-        igbc.fill = GridBagConstraints.HORIZONTAL;
-        igbc.insets = new Insets(2, 5, 2, 5);
-
-        igbc.gridx = 0;
-        igbc.gridy = 0;
-        infoEnvio.add(new JLabel("Estado:"), igbc);
-        igbc.gridx = 1;
-        lblEstado.setFont(new Font("SansSerif", Font.BOLD, 14));
-        infoEnvio.add(lblEstado, igbc);
-
-        igbc.gridx = 0;
-        igbc.gridy = 1;
-        infoEnvio.add(new JLabel("Fecha Registro:"), igbc);
-        igbc.gridx = 1;
-        infoEnvio.add(lblFecha, igbc);
-
-        igbc.gridx = 0;
-        igbc.gridy = 2;
-        infoEnvio.add(new JLabel("Costo:"), igbc);
-        igbc.gridx = 1;
-        infoEnvio.add(lblCosto, igbc);
-
-        igbc.gridx = 0;
-        igbc.gridy = 3;
-        infoEnvio.add(new JLabel("Remitente:"), igbc);
-        igbc.gridx = 1;
-        infoEnvio.add(lblRemitente, igbc);
-
-        igbc.gridx = 0;
-        igbc.gridy = 4;
-        infoEnvio.add(new JLabel("Destinatario:"), igbc);
-        igbc.gridx = 1;
-        infoEnvio.add(lblDestinatario, igbc);
-
-        igbc.gridx = 0;
-        igbc.gridy = 5;
-        infoEnvio.add(new JLabel("Peso:"), igbc);
-        igbc.gridx = 1;
-        infoEnvio.add(lblPeso, igbc);
-
-        igbc.gridx = 0;
-        igbc.gridy = 6;
-        infoEnvio.add(new JLabel("Dimensiones:"), igbc);
-        igbc.gridx = 1;
-        infoEnvio.add(lblDimensiones, igbc);
-
-        igbc.gridx = 0;
-        igbc.gridy = 7;
-        infoEnvio.add(new JLabel("Direccion Destino:"), igbc);
-        igbc.gridx = 1;
-        infoEnvio.add(lblDirDestino, igbc);
-
-        igbc.gridx = 0;
-        igbc.gridy = 8;
-        infoEnvio.add(new JLabel("Courier:"), igbc);
-        igbc.gridx = 1;
-        infoEnvio.add(lblCourier, igbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.gridwidth = 1;
-        gbc.weightx = 1.0;
-        panel.add(infoEnvio, gbc);
-
-        row++;
-        JPanel panelHistorial = new JPanel(new BorderLayout());
-        panelHistorial.setBorder(BorderFactory.createTitledBorder("Historial de Estados"));
-
-        tblHistorial.setModel(modelHistorial);
-        tblHistorial.setFillsViewportHeight(true);
-        tblHistorial.getColumnModel().getColumn(0).setPreferredWidth(140);
-        tblHistorial.getColumnModel().getColumn(1).setPreferredWidth(100);
-        tblHistorial.getColumnModel().getColumn(2).setPreferredWidth(250);
-        JScrollPane scrollHistorial = new JScrollPane(tblHistorial);
-        scrollHistorial.setPreferredSize(new Dimension(600, 200));
-        panelHistorial.add(scrollHistorial, BorderLayout.CENTER);
-
-        gbc.gridy = row;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        panel.add(panelHistorial, gbc);
-
-        return panel;
+        btnBuscar.addActionListener(e -> consultar());
+        txtCodigo.addActionListener(e -> consultar());
     }
 
     private void consultar() {
-        String codigo = txtTracking.getText().trim();
+        String codigo = txtCodigo.getText().trim();
         if (codigo.isEmpty()) {
-            lblMensaje.setText("Ingrese un codigo de tracking");
+            JOptionPane.showMessageDialog(this, "Ingresa un codigo de seguimiento.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
         try {
             Envio envio = facade.envios().consultarTracking(codigo);
             if (envio == null) {
-                lblMensaje.setText("No se encontro el envio con tracking: " + codigo);
+                JOptionPane.showMessageDialog(this, "No se encontro ningun envio con ese codigo.", "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
                 limpiar();
                 return;
             }
-
-            lblMensaje.setText(" ");
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
             lblEstado.setText(envio.getEstado());
-            lblFecha.setText(envio.getFechaRegistro() != null ? sdf.format(envio.getFechaRegistro()) : "-");
-            lblCosto.setText("S/ " + String.format("%.2f", envio.getCosto()));
             lblRemitente.setText(envio.getNombreRemitente());
             lblDestinatario.setText(envio.getNombreDestinatario());
-            lblPeso.setText(String.format("%.2f kg", envio.getPeso()));
-            lblDimensiones.setText(envio.getDimensiones() != null ? envio.getDimensiones() : "-");
-            lblDirDestino.setText(envio.getDireccionDestino());
-            lblCourier.setText(envio.getIdCourier() != null ? "Asignado (ID: " + envio.getIdCourier() + ")" : "No asignado");
+            lblDestino.setText(envio.getDireccionDestino());
+            lblCosto.setText("S/ " + String.format("%.2f", envio.getCosto()));
 
             List<HistorialEstado> historial = facade.envios().obtenerHistorial(envio.getIdEnvio());
-            modelHistorial.setRowCount(0);
+            modeloTabla.setRowCount(0);
             for (HistorialEstado h : historial) {
-                modelHistorial.addRow(new Object[]{
-                        sdf.format(h.getFechaHora()),
-                        h.getEstado(),
-                        h.getObservacion() != null ? h.getObservacion() : ""
-                });
+                modeloTabla.addRow(new Object[]{h.getEstado(), h.getFechaHora(), h.getObservacion()});
             }
-
         } catch (SQLException ex) {
-            lblMensaje.setText("Error: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error al consultar el envio:\n" + ex.getMessage(),
+                    "Error de base de datos", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void limpiar() {
         lblEstado.setText("-");
-        lblFecha.setText("-");
-        lblCosto.setText("-");
         lblRemitente.setText("-");
         lblDestinatario.setText("-");
-        lblPeso.setText("-");
-        lblDimensiones.setText("-");
-        lblDirDestino.setText("-");
-        lblCourier.setText("-");
-        modelHistorial.setRowCount(0);
+        lblDestino.setText("-");
+        lblCosto.setText("-");
+        modeloTabla.setRowCount(0);
     }
 }

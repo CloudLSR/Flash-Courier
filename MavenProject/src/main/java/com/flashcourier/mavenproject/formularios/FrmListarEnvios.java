@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
 package com.flashcourier.mavenproject.formularios;
 
 import com.flashcourier.mavenproject.controlador.CourierFacade;
@@ -12,12 +16,19 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+/**
+ * Tabla con el detalle de todos los envios registrados, coloreada por estado.
+ * Se abre desde la pantalla de Estadisticas ("Ver detalle de todos los envios").
+ * Rescatado y adaptado del aporte original de un companero de equipo.
+ *
+ * @author JoseLSR
+ */
 public class FrmListarEnvios extends JFrame {
 
     private final CourierFacade facade = new CourierFacade();
     private final DefaultTableModel model = new DefaultTableModel(
             new String[]{"Tracking", "Estado", "Remitente", "Destinatario",
-                         "Peso (kg)", "Costo (S/)", "Fecha"}, 0
+                         "Peso (kg)", "Costo (S/)", "Courier", "Fecha"}, 0
     ) {
         @Override public boolean isCellEditable(int row, int column) { return false; }
     };
@@ -27,7 +38,7 @@ public class FrmListarEnvios extends JFrame {
     public FrmListarEnvios() {
         setTitle("Flash Courier - Lista de Envios");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(800, 500);
+        setSize(860, 500);
         setLocationRelativeTo(null);
 
         JPanel main = new JPanel(new BorderLayout(10, 10));
@@ -49,13 +60,6 @@ public class FrmListarEnvios extends JFrame {
         table.setFillsViewportHeight(true);
         table.setRowHeight(24);
         table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
-        table.getColumnModel().getColumn(0).setPreferredWidth(120);
-        table.getColumnModel().getColumn(1).setPreferredWidth(90);
-        table.getColumnModel().getColumn(2).setPreferredWidth(140);
-        table.getColumnModel().getColumn(3).setPreferredWidth(140);
-        table.getColumnModel().getColumn(4).setPreferredWidth(70);
-        table.getColumnModel().getColumn(5).setPreferredWidth(70);
-        table.getColumnModel().getColumn(6).setPreferredWidth(120);
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -76,6 +80,7 @@ public class FrmListarEnvios extends JFrame {
                         case "En Ruta"    -> c.setBackground(new Color(255, 235, 200));
                         case "En Reparto" -> c.setBackground(new Color(255, 220, 220));
                         case "Entregado"  -> c.setBackground(new Color(220, 255, 220));
+                        case "Cancelado"  -> c.setBackground(new Color(230, 230, 230));
                         default           -> c.setBackground(Color.WHITE);
                     }
                 }
@@ -108,6 +113,7 @@ public class FrmListarEnvios extends JFrame {
                     e.getNombreDestinatario(),
                     String.format("%.2f", e.getPeso()),
                     String.format("%.2f", e.getCosto()),
+                    e.getNombreCourier() != null ? e.getNombreCourier() : "-",
                     e.getFechaRegistro() != null ? sdf.format(e.getFechaRegistro()) : "-",
                 });
             }
