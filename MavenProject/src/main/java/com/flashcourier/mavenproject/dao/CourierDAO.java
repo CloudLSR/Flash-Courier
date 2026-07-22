@@ -11,6 +11,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,5 +32,26 @@ public class CourierDAO {
             }
         }
         return lista;
+    }
+
+    /** Registra un nuevo courier (personal de entrega). Usado por Gestion de Personal (solo admin). */
+    public Courier registrarCourier(String nombre, String telefono) throws SQLException {
+        try (Connection con = ConexionDB.getInstancia().getConexion();
+             CallableStatement cs = con.prepareCall("{call sp_registrar_courier(?,?,?)}")) {
+            cs.setString(1, nombre);
+            cs.setString(2, telefono);
+            cs.registerOutParameter(3, Types.INTEGER);
+            cs.execute();
+            return new Courier(cs.getInt(3), nombre, telefono);
+        }
+    }
+
+    /** Elimina un courier. Falla con SQLException si tiene envios asociados (restriccion de llave foranea). */
+    public void eliminarCourier(int idCourier) throws SQLException {
+        try (Connection con = ConexionDB.getInstancia().getConexion();
+             CallableStatement cs = con.prepareCall("{call sp_eliminar_courier(?)}")) {
+            cs.setInt(1, idCourier);
+            cs.execute();
+        }
     }
 }

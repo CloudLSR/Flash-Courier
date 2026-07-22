@@ -6,6 +6,7 @@ package com.flashcourier.mavenproject.dao;
 
 import com.flashcourier.mavenproject.database.ConexionDB;
 import com.flashcourier.mavenproject.modelo.Envio;
+import com.flashcourier.mavenproject.modelo.ResumenEstadisticas;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -14,7 +15,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -28,7 +31,7 @@ public class EnvioDAO {
 
     /**
      * Registra el envio completo (remitente, destinatario, paquete, envio e historial inicial)
-     * como una sola transaccion: si algo falla, se hace rollback de todo para no dejar
+     * como UNA sola transaccion: si algo falla, se hace rollback de todo para no dejar
      * datos parciales o inconsistentes en la base de datos.
      */
     public Envio registrarEnvioCompleto(com.flashcourier.mavenproject.modelo.Cliente remitente, com.flashcourier.mavenproject.modelo.Cliente destinatario,
@@ -158,41 +161,6 @@ public class EnvioDAO {
         }
     }
 
-    public List<Envio> listarTodos() throws SQLException {
-        List<Envio> lista = new ArrayList<>();
-        String sql = "SELECT e.id_envio, e.codigo_tracking, e.fecha_registro, e.estado, "
-                   + "e.direccion_destino, e.costo, "
-                   + "r.nombres AS nombre_remitente, d.nombres AS nombre_destinatario, "
-                   + "p.peso, p.dimensiones, "
-                   + "c.nombre AS nombre_courier "
-                   + "FROM envio e "
-                   + "JOIN cliente r ON e.id_remitente = r.id_cliente "
-                   + "JOIN cliente d ON e.id_destinatario = d.id_cliente "
-                   + "JOIN paquete p ON e.id_paquete = p.id_paquete "
-                   + "LEFT JOIN courier c ON e.id_courier = c.id_courier "
-                   + "ORDER BY e.fecha_registro DESC";
-        try (Connection con = ConexionDB.getInstancia().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Envio e = new Envio();
-                e.setIdEnvio(rs.getInt("id_envio"));
-                e.setCodigoTracking(rs.getString("codigo_tracking"));
-                e.setFechaRegistro(rs.getTimestamp("fecha_registro"));
-                e.setEstado(rs.getString("estado"));
-                e.setDireccionDestino(rs.getString("direccion_destino"));
-                e.setCosto(rs.getDouble("costo"));
-                e.setNombreRemitente(rs.getString("nombre_remitente"));
-                e.setNombreDestinatario(rs.getString("nombre_destinatario"));
-                e.setPeso(rs.getDouble("peso"));
-                e.setDimensiones(rs.getString("dimensiones"));
-                e.setNombreCourier(rs.getString("nombre_courier"));
-                lista.add(e);
-            }
-        }
-        return lista;
-    }
-
     /** Busca un envio por su ID interno (usado por las pantallas de actualizar estado / confirmar entrega). */
     public Envio buscarPorId(int idEnvio) throws SQLException {
         String sql = "SELECT e.*, r.nombres AS nombre_remitente, d.nombres AS nombre_destinatario, "
@@ -221,5 +189,61 @@ public class EnvioDAO {
             }
         }
         return null;
+    }
+
+    /** Cuenta los envios agrupados por estado. Usado por el dashboard de estadisticas del menu. */
+    public Map<String, Integer> contarPorEstado() throws SQLException {
+        Map<String, Integer> mapa = new LinkedHashMap<>();
+        try (Connection con = ConexionDB.getInstancia().getConexion();
+             CallableStatement cs = con.prepareCall("{call sp_contar_envios_por_estado()}");
+             ResultSet rs = cs.executeQuery()) {
+            while (rs.next()) {
+                mapa.put(rs.getString("estado"), rs.getInt("cantidad"));
+            }
+        }
+        return mapa;
+    }
+
+    /**
+     * Resumen general para la pantalla de Estadisticas: total de pedidos,
+     * ingresos estimados (excluye los pedidos cancelados) y total de couriers.
+     */
+    public ResumenEstadisticas obtenerResumen() throws SQLException {
+        try (Connection con = ConexionDB.getInstancia().getConexion();
+             CallableStatement cs = con.prepareCall("{call sp_estadisticas_generales()}");
+             ResultSet rs = cs.executeQuery()) {
+            if (rs.next()) {
+                return new ResumenEstadisticas(
+                        rs.getInt("total_envios"),
+                        rs.getDouble("ingresos_estimados"),
+                        rs.getInt("total_couriers"));
+            }
+        }
+        return new ResumenEstadisticas(0, 0, 0);
+    }
+
+    /** Lista todos los envios con el nombre del courier asignado (si tiene), para la vista de lista completa. */
+    public List<Envio> listarTodos() throws SQLException {
+        List<Envio> lista = new ArrayList<>();
+        try (Connection con = ConexionDB.getInstancia().getConexion();
+             CallableStatement cs = con.prepareCall("{call sp_listar_envios()}");
+             ResultSet rs = cs.executeQuery()) {
+            while (rs.next()) {
+                Envio e = new Envio();
+                e.setIdEnvio(rs.getInt("id_envio"));
+                e.setCodigoTracking(rs.getString("codigo_tracking"));
+                e.setFechaRegistro(rs.getTimestamp("fecha_registro"));
+                e.setEstado(rs.getString("estado"));
+                e.setDireccionDestino(rs.getString("direccion_destino"));
+                e.setCosto(rs.getDouble("costo"));
+                e.setNombreRemitente(rs.getString("nombre_remitente"));
+                e.setNombreDestinatario(rs.getString("nombre_destinatario"));
+                e.setPeso(rs.getDouble("peso"));
+                e.setDimensiones(rs.getString("dimensiones"));
+                e.setNombreCourier(rs.getString("nombre_courier"));
+                lista.add(e);
+            }
+        }
+        return lista;
     }
 }

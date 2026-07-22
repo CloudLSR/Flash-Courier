@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
 package com.flashcourier.mavenproject.formularios;
 
 import com.flashcourier.mavenproject.dao.UsuarioDAO;
@@ -13,91 +17,73 @@ import java.sql.SQLException;
  */
 public class FrmLogin extends JFrame {
 
-    private JTextField txtCorreo;
-    private JPasswordField txtContrasena;
-    private JLabel lblMensaje;
+    private final JTextField txtCorreo = new JTextField(20);
+    private final JPasswordField txtPassword = new JPasswordField(20);
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
 
     public FrmLogin() {
         setTitle("Flash Courier - Iniciar Sesion");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(380, 280);
+        setSize(380, 240);
         setLocationRelativeTo(null);
         setResizable(false);
 
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(8, 8, 8, 8);
+        c.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel lblTitulo = new JLabel("FLASH COURIER", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("SansSerif", Font.BOLD, 20));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        panel.add(lblTitulo, gbc);
+        c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
+        panel.add(lblTitulo, c);
 
-        gbc.gridwidth = 1;
-        gbc.gridy = 1;
-        panel.add(new JLabel("Correo:"), gbc);
+        c.gridwidth = 1;
+        c.gridx = 0; c.gridy = 1;
+        panel.add(new JLabel("Correo:"), c);
+        c.gridx = 1;
+        panel.add(txtCorreo, c);
 
-        txtCorreo = new JTextField(20);
-        gbc.gridx = 1;
-        panel.add(txtCorreo, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panel.add(new JLabel("Contrasena:"), gbc);
-
-        txtContrasena = new JPasswordField(20);
-        gbc.gridx = 1;
-        panel.add(txtContrasena, gbc);
+        c.gridx = 0; c.gridy = 2;
+        panel.add(new JLabel("Contrasena:"), c);
+        c.gridx = 1;
+        panel.add(txtPassword, c);
 
         JButton btnIngresar = new JButton("Ingresar");
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
-        panel.add(btnIngresar, gbc);
+        c.gridx = 0; c.gridy = 3; c.gridwidth = 2;
+        panel.add(btnIngresar, c);
 
-        lblMensaje = new JLabel(" ", SwingConstants.CENTER);
-        lblMensaje.setForeground(Color.RED);
-        gbc.gridy = 4;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(lblMensaje, gbc);
+        JLabel lblAyuda = new JLabel("<html><small>Prueba: admin@flashcourier.pe / admin</small></html>", SwingConstants.CENTER);
+        c.gridy = 4;
+        panel.add(lblAyuda, c);
 
         add(panel);
 
-        btnIngresar.addActionListener(e -> ingresar());
-        txtContrasena.addActionListener(e -> ingresar());
-        
-        txtCorreo.setText("admin@flashcourier.pe");
-        txtContrasena.setText("admin");
+        btnIngresar.addActionListener(e -> iniciarSesion());
+        txtPassword.addActionListener(e -> iniciarSesion());
     }
 
-    private void ingresar() {
+    private void iniciarSesion() {
         String correo = txtCorreo.getText().trim();
-        String contrasena = new String(txtContrasena.getPassword());
+        String pass = new String(txtPassword.getPassword());
 
-        if (correo.isEmpty() || contrasena.isEmpty()) {
-            lblMensaje.setText("Ingrese correo y contrasena");
+        if (correo.isEmpty() || pass.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingresa correo y contrasena.", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         try {
-            Usuario usuario = usuarioDAO.validarCredenciales(correo, contrasena);
-            if (usuario != null) {
-                dispose();
-                SwingUtilities.invokeLater(() -> new FrmDashboard(usuario).setVisible(true));
-            } else {
-                lblMensaje.setText("Credenciales incorrectas");
-                txtContrasena.setText("");
-                txtContrasena.requestFocus();
+            Usuario usuario = usuarioDAO.validarCredenciales(correo, pass);
+            if (usuario == null) {
+                JOptionPane.showMessageDialog(this, "Credenciales incorrectas.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
+            new FrmMenu(usuario).setVisible(true);
+            dispose();
         } catch (SQLException ex) {
-            lblMensaje.setText("Error de conexion: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this,
+                "No se pudo conectar a la base de datos.\nVerifica que MySQL este corriendo en el puerto 3306.\n\n" + ex.getMessage(),
+                "Error de conexion", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
