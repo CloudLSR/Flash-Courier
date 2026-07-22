@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
 package com.flashcourier.mavenproject.formularios;
 
 import com.flashcourier.mavenproject.modelo.Usuario;
@@ -5,15 +9,23 @@ import com.flashcourier.mavenproject.modelo.Usuario;
 import javax.swing.*;
 import java.awt.*;
 
-public class FrmDashboard extends JFrame {
+/**
+ * Menu principal tras el login: navegacion a cada caso de uso.
+ * El dashboard de estadisticas vive en su propia pantalla (FrmEstadisticas),
+ * accesible para todo el personal desde el boton "Estadisticas".
+ *
+ * @author rrffrl
+ * @author JoseLSR
+ */
+public class FrmMenu extends JFrame {
 
     private final Usuario usuario;
 
-    public FrmDashboard(Usuario usuario) {
+    public FrmMenu(Usuario usuario) {
         this.usuario = usuario;
-        setTitle("Flash Courier - Panel Principal");
+        setTitle("Flash Courier - Menu Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(500, 400);
+        setSize(560, 520);
         setLocationRelativeTo(null);
         setResizable(false);
 
@@ -51,26 +63,41 @@ public class FrmDashboard extends JFrame {
         bgc.insets = new Insets(8, 20, 8, 20);
         bgc.gridx = 0;
         bgc.gridwidth = 1;
+        int fila = 0;
 
-        JButton btnRegistrar = crearBoton("Registrar Envio", "registrar_envio.png");
+        JButton btnRegistrar = crearBoton("Registrar Envio");
         btnRegistrar.addActionListener(e -> abrir(new FrmRegistrarEnvio()));
-        bgc.gridy = 0;
+        bgc.gridy = fila++;
         panelBotones.add(btnRegistrar, bgc);
 
-        JButton btnConsultar = crearBoton("Consultar Tracking", "consultar_tracking.png");
+        JButton btnConsultar = crearBoton("Consultar Tracking");
         btnConsultar.addActionListener(e -> abrir(new FrmConsultarTracking()));
-        bgc.gridy = 1;
+        bgc.gridy = fila++;
         panelBotones.add(btnConsultar, bgc);
-        
-        JButton btnActualizar = crearBoton("Actualizar Estado", "actualizar_estado.png");
+
+        JButton btnActualizar = crearBoton("Actualizar Estado");
         btnActualizar.addActionListener(e -> abrir(new FrmActualizarEstado()));
-        bgc.gridy = 2;
+        bgc.gridy = fila++;
         panelBotones.add(btnActualizar, bgc);
 
-        JButton btnListar = crearBoton("Lista de Envios", "lista_envios.png");
-        btnListar.addActionListener(e -> abrir(new FrmListarEnvios()));
-        bgc.gridy = 3;
-        panelBotones.add(btnListar, bgc);
+        // Estadisticas: disponible para todo el personal (solo lectura, no modifica datos).
+        JButton btnEstadisticas = crearBoton("Estadisticas");
+        btnEstadisticas.addActionListener(e -> abrir(new FrmEstadisticas()));
+        bgc.gridy = fila++;
+        panelBotones.add(btnEstadisticas, bgc);
+
+        // Gestion de Personal: el boton siempre esta visible, pero solo el rol
+        // Administracion puede usarlo. Para los demas roles aparece deshabilitado
+        // ("apagado") en vez de ocultarse.
+        boolean esAdmin = "Administracion".equalsIgnoreCase(usuario.getRol());
+        JButton btnPersonal = crearBoton("Gestion de Personal");
+        btnPersonal.setEnabled(esAdmin);
+        if (!esAdmin) {
+            btnPersonal.setToolTipText("Solo disponible para el rol Administracion");
+        }
+        btnPersonal.addActionListener(e -> abrir(new FrmGestionPersonal()));
+        bgc.gridy = fila++;
+        panelBotones.add(btnPersonal, bgc);
 
         main.add(panelBotones, BorderLayout.CENTER);
 
@@ -83,7 +110,7 @@ public class FrmDashboard extends JFrame {
         add(main);
     }
 
-    private JButton crearBoton(String texto, String icono) {
+    private JButton crearBoton(String texto) {
         JButton btn = new JButton(texto);
         btn.setFont(new Font("SansSerif", Font.PLAIN, 14));
         btn.setPreferredSize(new Dimension(250, 40));
