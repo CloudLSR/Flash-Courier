@@ -16,14 +16,19 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Gestion de Personal - pantalla exclusiva y funcional del rol Administracion
- * (el boton para abrirla aparece "apagado" para los demas roles en FrmMenu),
- * con dos pestanas:
+ * Gestion de Personal - pantalla con dos pestanas, visibilidad segun rol:
  * 1) Personal de Entrega (couriers): agregar/eliminar, aparecen disponibles
  *    al confirmar una entrega desde Actualizar Estado.
+ *    Visible para Administracion y Supervisor.
  * 2) Usuarios del Sistema: cuentas de acceso a la app (Recepcionista/Supervisor).
  *    La cuenta con rol Administracion siempre aparece listada, pero nunca se
  *    puede eliminar (bloqueado tanto en la interfaz como en la base de datos).
+ *    Visible SOLO para Administracion: crear/eliminar cuentas de acceso es una
+ *    funcion de seguridad que no se delega al Supervisor.
+ *
+ * El boton que abre esta pantalla ya viene deshabilitado para Recepcionista
+ * desde FrmMenu, asi que esta clase solo distingue entre Administracion y
+ * Supervisor.
  *
  * @author JoseLSR
  */
@@ -32,16 +37,24 @@ public class FrmGestionPersonal extends JFrame {
     private static final String ROL_ADMIN = "Administracion";
 
     private final CourierFacade facade = new CourierFacade();
+    private final Usuario usuarioActual;
 
-    public FrmGestionPersonal() {
+    public FrmGestionPersonal(Usuario usuarioActual) {
+        this.usuarioActual = usuarioActual;
+        boolean esAdmin = ROL_ADMIN.equalsIgnoreCase(usuarioActual.getRol());
+
         setTitle("Gestion de Personal - Flash Courier");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(600, 540);
+        setSize(680, 560);
         setLocationRelativeTo(null);
 
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Personal de Entrega", crearPanelCouriers());
-        tabs.addTab("Usuarios del Sistema", crearPanelUsuarios());
+        if (esAdmin) {
+            // Solo Administracion gestiona las cuentas de acceso al sistema
+            // (Recepcionista/Supervisor). El Supervisor ni siquiera ve esta pestana.
+            tabs.addTab("Usuarios del Sistema", crearPanelUsuarios());
+        }
 
         add(tabs);
     }
@@ -80,16 +93,26 @@ public class FrmGestionPersonal extends JFrame {
         JTextField txtNombre = new JTextField(15);
         JTextField txtTelefono = new JTextField(12);
 
-        JPanel panelForm = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelForm.add(new JLabel("Nombre:"));
-        panelForm.add(txtNombre);
-        panelForm.add(new JLabel("Telefono:"));
-        panelForm.add(txtTelefono);
-        JButton btnAgregar = new JButton("Agregar Courier");
-        panelForm.add(btnAgregar);
+        JPanel panelForm = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(4, 4, 4, 4);
+        gbc.anchor = GridBagConstraints.WEST;
 
-        JPanel panelAcciones = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        gbc.gridx = 0; gbc.gridy = 0;
+        panelForm.add(new JLabel("Nombre:"), gbc);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1;
+        panelForm.add(txtNombre, gbc);
+
+        gbc.gridx = 2; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
+        panelForm.add(new JLabel("Telefono:"), gbc);
+        gbc.gridx = 3; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1;
+        panelForm.add(txtTelefono, gbc);
+
+        JButton btnAgregar = new JButton("Agregar Courier");
         JButton btnEliminar = new JButton("Eliminar seleccionado");
+
+        JPanel panelAcciones = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        panelAcciones.add(btnAgregar);
         panelAcciones.add(btnEliminar);
 
         JPanel panelSur = new JPanel();
@@ -144,6 +167,7 @@ public class FrmGestionPersonal extends JFrame {
 
     // ------------------------------------------------------------------
     // Pestana 2: Usuarios del Sistema (cuentas de acceso a la app)
+    // Solo llega a construirse cuando el usuario actual es Administracion.
     // ------------------------------------------------------------------
     private JPanel crearPanelUsuarios() {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Nombre", "Correo", "Rol"}, 0) {
@@ -178,20 +202,38 @@ public class FrmGestionPersonal extends JFrame {
         JPasswordField txtContrasena = new JPasswordField(10);
         JComboBox<String> cmbRol = new JComboBox<>(new String[]{"Recepcionista", "Supervisor"});
 
-        JPanel panelForm = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelForm.add(new JLabel("Nombre:"));
-        panelForm.add(txtNombre);
-        panelForm.add(new JLabel("Correo:"));
-        panelForm.add(txtCorreo);
-        panelForm.add(new JLabel("Contrasena:"));
-        panelForm.add(txtContrasena);
-        panelForm.add(new JLabel("Rol:"));
-        panelForm.add(cmbRol);
-        JButton btnAgregar = new JButton("Agregar Usuario");
+        // GridBagLayout en 2 filas para que el combo de Rol tenga espacio propio
+        // y no quede cortado (antes vivia al final de una sola fila con FlowLayout).
+        JPanel panelForm = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(4, 4, 4, 4);
+        gbc.anchor = GridBagConstraints.WEST;
 
-        JPanel panelAcciones = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelAcciones.add(btnAgregar);
+        gbc.gridx = 0; gbc.gridy = 0;
+        panelForm.add(new JLabel("Nombre:"), gbc);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1;
+        panelForm.add(txtNombre, gbc);
+
+        gbc.gridx = 2; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
+        panelForm.add(new JLabel("Correo:"), gbc);
+        gbc.gridx = 3; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1;
+        panelForm.add(txtCorreo, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
+        panelForm.add(new JLabel("Contrasena:"), gbc);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1;
+        panelForm.add(txtContrasena, gbc);
+
+        gbc.gridx = 2; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
+        panelForm.add(new JLabel("Rol:"), gbc);
+        gbc.gridx = 3; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1;
+        panelForm.add(cmbRol, gbc);
+
+        JButton btnAgregar = new JButton("Agregar Usuario");
         JButton btnEliminar = new JButton("Eliminar seleccionado");
+
+        JPanel panelAcciones = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        panelAcciones.add(btnAgregar);
         panelAcciones.add(btnEliminar);
 
         JPanel panelSur = new JPanel();

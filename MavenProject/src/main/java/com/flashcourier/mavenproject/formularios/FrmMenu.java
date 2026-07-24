@@ -14,7 +14,6 @@ import java.awt.*;
  * El dashboard de estadisticas vive en su propia pantalla (FrmEstadisticas),
  * accesible para todo el personal desde el boton "Estadisticas".
  *
- * @author rrffrl
  * @author JoseLSR
  */
 public class FrmMenu extends JFrame {
@@ -80,22 +79,38 @@ public class FrmMenu extends JFrame {
         bgc.gridy = fila++;
         panelBotones.add(btnActualizar, bgc);
 
-        // Estadisticas: disponible para todo el personal (solo lectura, no modifica datos).
+        // Jerarquia de roles:
+        // - Recepcionista: operativa (Registrar/Consultar/Actualizar). Sin Estadisticas
+        //   ni Gestion de Personal.
+        // - Supervisor: todo lo del Recepcionista + Estadisticas + Gestion de Personal
+        //   (pero solo la pestana de Personal de Entrega, ver FrmGestionPersonal).
+        // - Administracion: acceso total, incluyendo Usuarios del Sistema.
+        boolean esAdmin = "Administracion".equalsIgnoreCase(usuario.getRol());
+        boolean esSupervisor = "Supervisor".equalsIgnoreCase(usuario.getRol());
+        boolean puedeVerEstadisticas = esAdmin || esSupervisor;
+        boolean puedeGestionarPersonal = esAdmin || esSupervisor;
+
+        // Estadisticas: bloqueada para Recepcionista (aparece "apagada" en vez de
+        // ocultarse, igual que Gestion de Personal).
         JButton btnEstadisticas = crearBoton("Estadisticas");
+        btnEstadisticas.setEnabled(puedeVerEstadisticas);
+        if (!puedeVerEstadisticas) {
+            btnEstadisticas.setToolTipText("Solo disponible para Supervisor y Administracion");
+        }
         btnEstadisticas.addActionListener(e -> abrir(new FrmEstadisticas()));
         bgc.gridy = fila++;
         panelBotones.add(btnEstadisticas, bgc);
 
-        // Gestion de Personal: el boton siempre esta visible, pero solo el rol
-        // Administracion puede usarlo. Para los demas roles aparece deshabilitado
-        // ("apagado") en vez de ocultarse.
-        boolean esAdmin = "Administracion".equalsIgnoreCase(usuario.getRol());
+        // Gestion de Personal: el boton siempre esta visible, pero solo se habilita
+        // para Supervisor y Administracion. Para Recepcionista aparece deshabilitado
+        // ("apagado") en vez de ocultarse. Dentro de la pantalla, FrmGestionPersonal
+        // decide segun el rol si muestra 1 o 2 pestanas.
         JButton btnPersonal = crearBoton("Gestion de Personal");
-        btnPersonal.setEnabled(esAdmin);
-        if (!esAdmin) {
-            btnPersonal.setToolTipText("Solo disponible para el rol Administracion");
+        btnPersonal.setEnabled(puedeGestionarPersonal);
+        if (!puedeGestionarPersonal) {
+            btnPersonal.setToolTipText("Solo disponible para Supervisor y Administracion");
         }
-        btnPersonal.addActionListener(e -> abrir(new FrmGestionPersonal()));
+        btnPersonal.addActionListener(e -> abrir(new FrmGestionPersonal(usuario)));
         bgc.gridy = fila++;
         panelBotones.add(btnPersonal, bgc);
 
