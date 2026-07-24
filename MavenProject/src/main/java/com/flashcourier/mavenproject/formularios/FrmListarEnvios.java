@@ -6,14 +6,18 @@ package com.flashcourier.mavenproject.formularios;
 
 import com.flashcourier.mavenproject.controlador.CourierFacade;
 import com.flashcourier.mavenproject.modelo.Envio;
+import com.flashcourier.mavenproject.reportes.ListaEnviosPdfService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,6 +30,7 @@ import java.util.List;
 public class FrmListarEnvios extends JFrame {
 
     private final CourierFacade facade = new CourierFacade();
+    private final ListaEnviosPdfService pdfService = new ListaEnviosPdfService();
     private final DefaultTableModel model = new DefaultTableModel(
             new String[]{"Tracking", "Estado", "Remitente", "Destinatario",
                          "Peso (kg)", "Costo (S/)", "Courier", "Fecha"}, 0
@@ -34,6 +39,8 @@ public class FrmListarEnvios extends JFrame {
     };
     private final JTable table = new JTable(model);
     private final JLabel lblMensaje = new JLabel(" ");
+    private final JButton btnDescargarPdf = new JButton("Descargar PDF");
+    private List<Envio> enviosActuales = Collections.emptyList();
 
     public FrmListarEnvios() {
         setTitle("Flash Courier - Lista de Envios");
@@ -53,6 +60,8 @@ public class FrmListarEnvios extends JFrame {
         JButton btnRefrescar = new JButton("Refrescar");
         btnRefrescar.addActionListener(e -> cargarDatos());
         accion.add(btnRefrescar);
+        btnDescargarPdf.addActionListener(e -> descargarPdf());
+        accion.add(btnDescargarPdf);
         header.add(accion, BorderLayout.EAST);
 
         main.add(header, BorderLayout.NORTH);
@@ -102,6 +111,7 @@ public class FrmListarEnvios extends JFrame {
     private void cargarDatos() {
         try {
             List<Envio> envios = facade.envios().listarEnvios();
+            enviosActuales = envios;
             model.setRowCount(0);
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
@@ -123,6 +133,28 @@ public class FrmListarEnvios extends JFrame {
         } catch (SQLException ex) {
             lblMensaje.setForeground(Color.RED);
             lblMensaje.setText("Error al cargar datos: " + ex.getMessage());
+        }
+    }
+
+    private void descargarPdf() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Guardar lista de envios");
+        chooser.setSelectedFile(new File("Lista-Envios.pdf"));
+        int resultado = chooser.showSaveDialog(this);
+        if (resultado != JFileChooser.APPROVE_OPTION) return;
+
+        File destino = chooser.getSelectedFile();
+        if (!destino.getName().toLowerCase().endsWith(".pdf")) {
+            destino = new File(destino.getParentFile(), destino.getName() + ".pdf");
+        }
+
+        try {
+            pdfService.generar(enviosActuales, destino);
+            JOptionPane.showMessageDialog(this, "Lista guardada en:\n" + destino.getAbsolutePath(),
+                    "PDF generado", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo generar el PDF:\n" + ex.getMessage(),
+                    "Error al generar el PDF", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

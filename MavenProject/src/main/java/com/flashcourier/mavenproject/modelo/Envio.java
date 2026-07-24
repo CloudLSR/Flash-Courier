@@ -25,9 +25,15 @@ public class Envio {
 
     // Campos de conveniencia para mostrar en tablas / tracking (JOIN)
     private String nombreRemitente;
+    private String dniRemitente;
+    private String telefonoRemitente;
+    private String direccionRemitente;
     private String nombreDestinatario;
+    private String dniDestinatario;
+    private String telefonoDestinatario;
     private double peso;
     private String dimensiones;
+    private String descripcionPaquete;
     private String nombreCourier;
 
     public int getIdEnvio() { return idEnvio; }
@@ -52,12 +58,24 @@ public class Envio {
     public void setIdCourier(Integer idCourier) { this.idCourier = idCourier; }
     public String getNombreRemitente() { return nombreRemitente; }
     public void setNombreRemitente(String nombreRemitente) { this.nombreRemitente = nombreRemitente; }
+    public String getDniRemitente() { return dniRemitente; }
+    public void setDniRemitente(String dniRemitente) { this.dniRemitente = dniRemitente; }
+    public String getTelefonoRemitente() { return telefonoRemitente; }
+    public void setTelefonoRemitente(String telefonoRemitente) { this.telefonoRemitente = telefonoRemitente; }
+    public String getDireccionRemitente() { return direccionRemitente; }
+    public void setDireccionRemitente(String direccionRemitente) { this.direccionRemitente = direccionRemitente; }
     public String getNombreDestinatario() { return nombreDestinatario; }
     public void setNombreDestinatario(String nombreDestinatario) { this.nombreDestinatario = nombreDestinatario; }
+    public String getDniDestinatario() { return dniDestinatario; }
+    public void setDniDestinatario(String dniDestinatario) { this.dniDestinatario = dniDestinatario; }
+    public String getTelefonoDestinatario() { return telefonoDestinatario; }
+    public void setTelefonoDestinatario(String telefonoDestinatario) { this.telefonoDestinatario = telefonoDestinatario; }
     public double getPeso() { return peso; }
     public void setPeso(double peso) { this.peso = peso; }
     public String getDimensiones() { return dimensiones; }
     public void setDimensiones(String dimensiones) { this.dimensiones = dimensiones; }
+    public String getDescripcionPaquete() { return descripcionPaquete; }
+    public void setDescripcionPaquete(String descripcionPaquete) { this.descripcionPaquete = descripcionPaquete; }
     public String getNombreCourier() { return nombreCourier; }
     public void setNombreCourier(String nombreCourier) { this.nombreCourier = nombreCourier; }
 }

@@ -6,6 +6,7 @@ package com.flashcourier.mavenproject.formularios;
 
 import com.flashcourier.mavenproject.controlador.CourierFacade;
 import com.flashcourier.mavenproject.modelo.ResumenEstadisticas;
+import com.flashcourier.mavenproject.modelo.state.EstadoColores;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -26,15 +27,7 @@ import java.util.Map;
  */
 public class FrmEstadisticas extends JFrame {
 
-    private static final Map<String, Color> COLORES_ESTADO = new LinkedHashMap<>();
-    static {
-        COLORES_ESTADO.put("Registrado", new Color(96, 165, 250));   // celeste
-        COLORES_ESTADO.put("En Almacen", new Color(250, 204, 21));   // amarillo
-        COLORES_ESTADO.put("En Ruta", new Color(251, 146, 60));      // naranja
-        COLORES_ESTADO.put("En Reparto", new Color(167, 139, 250));  // lila
-        COLORES_ESTADO.put("Entregado", new Color(74, 222, 128));    // verde
-        COLORES_ESTADO.put("Cancelado", new Color(248, 113, 113));   // rojo
-    }
+    private static final Map<String, Color> COLORES_ESTADO = EstadoColores.COLORES_ESTADO;
 
     private final CourierFacade facade = new CourierFacade();
     private final JPanel panelTarjetas = new JPanel(new GridLayout(1, 4, 10, 0));

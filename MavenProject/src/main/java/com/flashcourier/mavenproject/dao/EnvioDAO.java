@@ -97,9 +97,15 @@ public class EnvioDAO {
                     e.setDireccionDestino(rs.getString("direccion_destino"));
                     e.setCosto(rs.getDouble("costo"));
                     e.setNombreRemitente(rs.getString("remitente"));
+                    e.setDniRemitente(rs.getString("remitente_dni"));
+                    e.setTelefonoRemitente(rs.getString("remitente_telefono"));
+                    e.setDireccionRemitente(rs.getString("remitente_direccion"));
                     e.setNombreDestinatario(rs.getString("destinatario"));
+                    e.setDniDestinatario(rs.getString("destinatario_dni"));
+                    e.setTelefonoDestinatario(rs.getString("destinatario_telefono"));
                     e.setPeso(rs.getDouble("peso"));
                     e.setDimensiones(rs.getString("dimensiones"));
+                    e.setDescripcionPaquete(rs.getString("descripcion_paquete"));
                     int idCourier = rs.getInt("id_courier");
                     e.setIdCourier(rs.wasNull() ? null : idCourier);
                     return e;
