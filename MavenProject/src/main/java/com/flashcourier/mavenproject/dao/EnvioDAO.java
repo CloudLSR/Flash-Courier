@@ -141,7 +141,50 @@ public class EnvioDAO {
         }
     }
 
-    /** Confirma la entrega: asigna courier, marca "Entregado" y deja constancia en el historial. */
+    /**
+     * Asigna el courier y avanza el estado en un solo paso (reemplaza al viejo
+     * "confirmarEntrega"). Ahora esto se usa al pasar a "En Reparto" -no a
+     * "Entregado"-, porque conceptualmente es el momento en que el paquete
+     * deja nuestras manos y pasa a las del courier. No hace falta un stored
+     * procedure nuevo: la columna id_courier ya existe en la tabla envio, asi
+     * que se actualiza con un UPDATE directo y luego se reusa
+     * sp_actualizar_estado_envio (el mismo que ya existia) para el cambio de
+     * estado, todo dentro de la misma transaccion.
+     */
+    public void asignarCourierYAvanzar(int idEnvio, int idCourier, String nuevoEstado, String observacion) throws SQLException {
+        Connection con = null;
+        try {
+            con = ConexionDB.getInstancia().getConexion();
+            con.setAutoCommit(false);
+
+            try (PreparedStatement ps = con.prepareStatement("UPDATE envio SET id_courier = ? WHERE id_envio = ?")) {
+                ps.setInt(1, idCourier);
+                ps.setInt(2, idEnvio);
+                ps.executeUpdate();
+            }
+            try (CallableStatement cs = con.prepareCall("{call sp_actualizar_estado_envio(?,?)}")) {
+                cs.setInt(1, idEnvio);
+                cs.setString(2, nuevoEstado);
+                cs.execute();
+            }
+            historialDAO.registrarHistorial(con, idEnvio, nuevoEstado, observacion);
+
+            con.commit();
+        } catch (SQLException ex) {
+            if (con != null) con.rollback();
+            throw ex;
+        } finally {
+            if (con != null) {
+                con.setAutoCommit(true);
+                con.close();
+            }
+        }
+    }
+
+    /** Confirma la entrega: asigna courier, marca "Entregado" y deja constancia en el historial.
+     *  @deprecated ya no se usa desde la UI (el courier ahora se asigna antes, al pasar a "En
+     *  Reparto", ver {@link #asignarCourierYAvanzar}); se deja el metodo por si hace falta en el futuro. */
+    @Deprecated
     public void confirmarEntrega(int idEnvio, int idCourier, String observacion) throws SQLException {
         Connection con = null;
         try {
@@ -195,6 +238,23 @@ public class EnvioDAO {
             }
         }
         return null;
+    }
+
+    /**
+     * true si el courier tiene al menos un envio que todavia no llego a un
+     * estado final (Entregado o Cancelado). Se usa para bloquear su
+     * eliminacion en Gestion de Personal mientras siga con un pedido activo;
+     * una vez que ese pedido se entrega o se cancela, ya se puede borrar.
+     */
+    public boolean tieneEnviosEnProceso(int idCourier) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM envio WHERE id_courier = ? AND estado NOT IN ('Entregado','Cancelado')";
+        try (Connection con = ConexionDB.getInstancia().getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idCourier);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        }
     }
 
     /** Cuenta los envios agrupados por estado. Usado por el dashboard de estadisticas del menu. */

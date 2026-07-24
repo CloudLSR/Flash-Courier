@@ -72,8 +72,20 @@ public class EnvioControlador {
         envioDAO.actualizarEstado(idEnvio, nuevoEstado, observacion);
     }
 
+    /** Asigna el courier y avanza de estado en un solo paso (ver detalle en EnvioDAO). */
+    public void asignarCourierYAvanzar(int idEnvio, int idCourier, String nuevoEstado, String observacion) throws SQLException {
+        envioDAO.asignarCourierYAvanzar(idEnvio, idCourier, nuevoEstado, observacion);
+    }
+
+    /** @deprecated ver EnvioDAO#confirmarEntrega */
+    @Deprecated
     public void confirmarEntrega(int idEnvio, int idCourier, String observacion) throws SQLException {
         envioDAO.confirmarEntrega(idEnvio, idCourier, observacion);
+    }
+
+    /** true si el courier tiene un envio que todavia no esta Entregado ni Cancelado. */
+    public boolean tieneEnviosEnProceso(int idCourier) throws SQLException {
+        return envioDAO.tieneEnviosEnProceso(idCourier);
     }
 
     public Envio buscarPorId(int idEnvio) throws SQLException {

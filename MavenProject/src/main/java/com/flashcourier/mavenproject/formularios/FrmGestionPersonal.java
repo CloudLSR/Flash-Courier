@@ -152,6 +152,15 @@ public class FrmGestionPersonal extends JFrame {
                     "Confirmar eliminacion", JOptionPane.YES_NO_OPTION);
             if (confirmacion != JOptionPane.YES_OPTION) return;
             try {
+                // No se puede borrar un courier con un pedido en proceso (todavia
+                // no Entregado ni Cancelado); en cuanto ese pedido llega a un
+                // estado final, o si nunca tuvo ninguno, si se puede eliminar.
+                if (facade.envios().tieneEnviosEnProceso(idCourier)) {
+                    JOptionPane.showMessageDialog(this,
+                            nombre + " tiene un envio en proceso todavia.\nEspera a que se marque como Entregado o Cancelado para poder eliminarlo.",
+                            "Accion no permitida", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
                 facade.eliminarCourier(idCourier);
                 cargar.run();
             } catch (SQLException ex) {
