@@ -41,17 +41,17 @@ public class CourierFacade {
         return courierDAO.listarCouriers();
     }
 
-    /** Registra un nuevo courier (personal de entrega). Pantalla de Gestion de Personal (solo admin). */
+    /** Registra un nuevo courier (personal de entrega). Pantalla de Gestion de Personal (Administrador y Supervisor). */
     public Courier registrarCourier(String nombre, String telefono) throws SQLException {
         return courierDAO.registrarCourier(nombre, telefono);
     }
 
-    /** Elimina un courier. Pantalla de Gestion de Personal (solo admin). */
+    /** Elimina un courier. Pantalla de Gestion de Personal (Administrador y Supervisor). */
     public void eliminarCourier(int idCourier) throws SQLException {
         courierDAO.eliminarCourier(idCourier);
     }
 
-    /** Lista el personal que usa la app (Recepcionista, Supervisor, Administracion). Pantalla Gestion de Personal (solo admin). */
+    /** Lista el personal que usa la app (Recepcionista, Supervisor, Administrador). Pantalla Gestion de Personal (solo admin). */
     public List<Usuario> listarUsuarios() throws SQLException {
         return usuarioDAO.listarUsuarios();
     }
@@ -61,7 +61,7 @@ public class CourierFacade {
         return usuarioDAO.registrarUsuario(nombre, correo, contrasena, rol);
     }
 
-    /** Elimina un usuario de la app (nunca la cuenta de Administracion). Pantalla Gestion de Personal (solo admin). */
+    /** Elimina un usuario de la app (nunca la cuenta de Administrador). Pantalla Gestion de Personal (solo admin). */
     public void eliminarUsuario(int idUsuario) throws SQLException {
         usuarioDAO.eliminarUsuario(idUsuario);
     }

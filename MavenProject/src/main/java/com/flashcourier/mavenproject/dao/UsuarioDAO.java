@@ -38,7 +38,7 @@ public class UsuarioDAO {
         return null;
     }
 
-    /** Lista el personal que usa la app (Recepcionista, Supervisor, Administracion). Pantalla Gestion de Personal. */
+    /** Lista el personal que usa la app (Recepcionista, Supervisor, Administrador). Pantalla Gestion de Personal. */
     public List<Usuario> listarUsuarios() throws SQLException {
         List<Usuario> lista = new ArrayList<>();
         try (Connection con = ConexionDB.getInstancia().getConexion();
@@ -67,7 +67,7 @@ public class UsuarioDAO {
     }
 
     /**
-     * Elimina un usuario de la app. La cuenta con rol Administracion nunca se borra
+     * Elimina un usuario de la app. La cuenta con rol Administrador nunca se borra
      * (el procedimiento almacenado lo bloquea a nivel de base de datos como respaldo).
      */
     public void eliminarUsuario(int idUsuario) throws SQLException {

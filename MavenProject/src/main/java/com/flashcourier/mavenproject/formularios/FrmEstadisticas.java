@@ -35,7 +35,7 @@ public class FrmEstadisticas extends JFrame {
     private final JLabel lblMensaje = new JLabel(" ");
 
     public FrmEstadisticas() {
-        setTitle("Estadisticas - Flash Courier");
+        setTitle("Estadísticas - Flash Courier");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(620, 560);
         setLocationRelativeTo(null);
@@ -43,7 +43,7 @@ public class FrmEstadisticas extends JFrame {
         JPanel main = new JPanel(new BorderLayout(12, 12));
         main.setBorder(new EmptyBorder(18, 18, 18, 18));
 
-        JLabel titulo = new JLabel("Panel de Estadisticas", SwingConstants.CENTER);
+        JLabel titulo = new JLabel("Panel de Estadísticas", SwingConstants.CENTER);
         titulo.setFont(new Font("SansSerif", Font.BOLD, 18));
         main.add(titulo, BorderLayout.NORTH);
 
@@ -61,7 +61,7 @@ public class FrmEstadisticas extends JFrame {
         JPanel panelSur = new JPanel(new BorderLayout());
         panelSur.add(lblMensaje, BorderLayout.WEST);
 
-        JButton btnVerTodos = new JButton("Ver detalle de todos los envios");
+        JButton btnVerTodos = new JButton("Ver detalle de todos los envíos");
         btnVerTodos.addActionListener(e -> new FrmListarEnvios().setVisible(true));
         JButton btnActualizar = new JButton("Actualizar");
         btnActualizar.addActionListener(e -> cargarDatos());
@@ -93,7 +93,7 @@ public class FrmEstadisticas extends JFrame {
 
             panelGrafico.setDatos(conteo);
         } catch (SQLException ex) {
-            lblMensaje.setText("No se pudieron cargar las estadisticas: " + ex.getMessage());
+            lblMensaje.setText("No se pudieron cargar las estadísticas: " + ex.getMessage());
         }
         panelTarjetas.revalidate();
         panelTarjetas.repaint();
@@ -138,7 +138,7 @@ public class FrmEstadisticas extends JFrame {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             if (datos == null || datos.isEmpty()) {
-                g.drawString("Sin datos todavia", 15, 20);
+                g.drawString("Sin datos todavía", 15, 20);
                 return;
             }
             Graphics2D g2 = (Graphics2D) g;

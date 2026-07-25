@@ -43,7 +43,7 @@ public class FrmListarEnvios extends JFrame {
     private List<Envio> enviosActuales = Collections.emptyList();
 
     public FrmListarEnvios() {
-        setTitle("Flash Courier - Lista de Envios");
+        setTitle("Flash Courier - Lista de Envíos");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(860, 500);
         setLocationRelativeTo(null);
@@ -52,7 +52,7 @@ public class FrmListarEnvios extends JFrame {
         main.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         JPanel header = new JPanel(new BorderLayout());
-        JLabel titulo = new JLabel("LISTA DE ENVIOS", SwingConstants.CENTER);
+        JLabel titulo = new JLabel("LISTA DE ENVÍOS", SwingConstants.CENTER);
         titulo.setFont(new Font("SansSerif", Font.BOLD, 18));
         header.add(titulo, BorderLayout.CENTER);
 
@@ -85,7 +85,7 @@ public class FrmListarEnvios extends JFrame {
                 if (!isSelected) {
                     switch (estado) {
                         case "Registrado" -> c.setBackground(new Color(230, 240, 255));
-                        case "En Almacen" -> c.setBackground(new Color(255, 255, 220));
+                        case "En Almacén" -> c.setBackground(new Color(255, 255, 220));
                         case "En Ruta"    -> c.setBackground(new Color(255, 235, 200));
                         case "En Reparto" -> c.setBackground(new Color(255, 220, 220));
                         case "Entregado"  -> c.setBackground(new Color(220, 255, 220));
@@ -128,7 +128,7 @@ public class FrmListarEnvios extends JFrame {
                 });
             }
 
-            lblMensaje.setText("Total: " + envios.size() + " envio(s)");
+            lblMensaje.setText("Total: " + envios.size() + " envío(s)");
             lblMensaje.setForeground(Color.DARK_GRAY);
         } catch (SQLException ex) {
             lblMensaje.setForeground(Color.RED);
@@ -138,7 +138,7 @@ public class FrmListarEnvios extends JFrame {
 
     private void descargarPdf() {
         JFileChooser chooser = new JFileChooser();
-        chooser.setDialogTitle("Guardar lista de envios");
+        chooser.setDialogTitle("Guardar lista de envíos");
         chooser.setSelectedFile(new File("Lista-Envios.pdf"));
         int resultado = chooser.showSaveDialog(this);
         if (resultado != JFileChooser.APPROVE_OPTION) return;

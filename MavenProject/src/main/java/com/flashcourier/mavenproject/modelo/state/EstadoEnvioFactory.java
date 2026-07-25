@@ -12,7 +12,7 @@ public class EstadoEnvioFactory {
     public static EstadoEnvio desdeNombre(String nombre) {
         switch (nombre) {
             case "Registrado": return new EstadoRegistrado();
-            case "En Almacen": return new EstadoEnAlmacen();
+            case "En Almacén": return new EstadoEnAlmacen();
             case "En Ruta": return new EstadoEnRuta();
             case "En Reparto": return new EstadoEnReparto();
             case "Entregado": return new EstadoEntregado();
@@ -22,6 +22,6 @@ public class EstadoEnvioFactory {
     }
 
     public static final String[] TODOS_LOS_ESTADOS = {
-        "Registrado", "En Almacen", "En Ruta", "En Reparto", "Entregado"
+        "Registrado", "En Almacén", "En Ruta", "En Reparto", "Entregado"
     };
 }

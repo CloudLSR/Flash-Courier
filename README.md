@@ -1,8 +1,8 @@
 # Flash Courier
 
-Sistema de gestión de envíos y logística **"Flash Courier"**. Java, Swing y MySQL, con arquitectura en capas (MVC + DAO).
+Sistema de gestión de envíos y logística **"Flash Courier"**. Java, Swing y MySQL, con arquitectura en capas (Facade + Controlador + DAO).
 
-Aplicación de escritorio desarrollada para el curso de Análisis y Diseño de Sistemas de Información (UTP). Simula el flujo completo de una agencia de mensajería: desde que se registra un paquete hasta que se confirma su entrega, pasando por el seguimiento en tiempo real y la gestión del personal que opera el sistema.
+Aplicación de escritorio que simula el flujo completo de una agencia de mensajería: desde que se registra un paquete hasta que se confirma su entrega, pasando por el seguimiento en tiempo real, la generación de comprobantes en PDF y la gestión del personal que opera el sistema.
 
 ## Tecnologías
 
@@ -20,39 +20,43 @@ El proyecto sigue una arquitectura en capas (Vista → Facade → Controlador �
 |---|---|---|
 | Vista | `formularios` | Pantallas Swing, un formulario por caso de uso |
 | Facade | `controlador.CourierFacade` | Punto único de entrada que consumen las vistas |
-| Controlador | `controlador` | Lógica de negocio (cálculo de costos, generación de tracking) |
+| Controlador | `controlador` | Lógica de negocio (cálculo de costos, generación de tracking, transiciones de estado) |
 | DAO | `dao` | Acceso a datos, cada uno invoca sus procedimientos almacenados |
-| Modelo | `modelo` | Entidades del dominio (POJOs) |
+| Modelo | `modelo` | Entidades del dominio (POJOs) y patrón State (`modelo.state`) |
 | Base de datos | `database.ConexionDB` | Conexión JDBC (patrón Singleton) |
 | Reportes | `reportes` | Generación de PDFs (comprobante de envío y lista de envíos) con PDFBox |
-| Interfaz | `ui` | Paleta de colores, fondo y botón estilo retrowave, usados en el Login |
+| Interfaz | `ui` | Paleta de colores y componentes estilo retrowave (Login) y botones tipo píldora (Menú) |
 
 Patrones de diseño aplicados:
 - **Singleton** — `ConexionDB`, una única instancia de conexión.
 - **Facade** — `CourierFacade`, oculta la complejidad de las demás capas a las vistas.
-- **State** — `modelo.state`, cada estado de un envío (`Registrado`, `En Almacen`, `En Ruta`, `En Reparto`, `Entregado`, `Cancelado`) sabe cuál es su transición válida siguiente, evitando saltos de estado inválidos.
+- **State** — `modelo.state`, cada estado de un envío (`Registrado`, `En Almacén`, `En Ruta`, `En Reparto`, `Entregado`) sabe cuál es su transición válida siguiente, evitando saltos de estado inválidos. `Cancelado` es un estado final alternativo, disponible desde cualquier estado no terminal.
 
 ## Funcionalidades
 
-- **Registrar Envío** — captura remitente, destinatario y paquete; calcula el costo según el peso y genera un código de tracking único (con opción de copiarlo al portapapeles).
-- **Consultar Tracking** — búsqueda pública por código, con el historial completo de movimientos y descarga del comprobante en PDF.
-- **Actualizar Estado** — avanza un envío al siguiente estado válido; si el siguiente es "Entregado" pide asignar un courier; permite cancelar el pedido desde cualquier estado no terminal.
-- **Estadísticas** — total de pedidos, ingresos estimados (excluyendo cancelados), cantidad de personal de entrega, y detalle de todos los envíos con exportación a PDF.
-- **Gestión de Personal** *(solo rol Administración)* — altas y bajas de couriers y de usuarios del sistema (Recepcionista/Supervisor); la cuenta de Administración nunca puede eliminarse.
-
-## Interfaz
-
-- **Login** — pantalla con estética retrowave: logo y formulario en una tarjeta translúcida sobre una ilustración de ciudad al atardecer.
-- **Menú Principal** — fondo con foto de almacén; título, nombre de usuario y rol en texto claro para mantener la legibilidad sobre la imagen.
-- El resto de pantallas (Registrar Envío, Consultar Tracking, Actualizar Estado, Estadísticas, Gestión de Personal, Listar Envíos) mantiene la apariencia por defecto de Swing.
-- Las imágenes usadas (logo y fondos) están en `MavenProject/src/main/resources/img`.
+- **Registrar Envío** — captura remitente, destinatario y paquete; calcula el costo según el peso y genera un código de tracking único, mostrado en un diálogo con botón para copiarlo al portapapeles.
+- **Consultar Tracking** — búsqueda pública por código: muestra todos los datos del envío, remitente, destinatario y paquete, el historial completo de movimientos (coloreado por estado) y permite descargar el comprobante en PDF.
+- **Actualizar Estado** — avanza un envío al siguiente estado válido (patrón State); el courier se asigna una sola vez, justo al pasar a "En Reparto"; permite cancelar el pedido desde cualquier estado no terminal, con motivo obligatorio.
+- **Estadísticas** — total de pedidos, ingresos estimados (excluyendo cancelados), cantidad de personal de entrega, y un gráfico de barras con el desglose por estado; acceso de solo lectura para todo el personal con permiso.
+- **Listar Envíos** — detalle completo de todos los envíos en una tabla coloreada por estado, con exportación a PDF (se abre desde Estadísticas).
+- **Gestión de Personal** — dos pestañas según el rol (ver tabla de roles más abajo):
+  - **Personal de Entrega**: alta y baja de couriers. Un courier con un envío todavía en proceso (no Entregado ni Cancelado) no se puede eliminar hasta que ese envío llegue a un estado final.
+  - **Usuarios del Sistema**: alta y baja de cuentas de acceso (Recepcionista/Supervisor). La cuenta con rol Administrador siempre aparece listada pero nunca se puede eliminar, ni se puede crear otra cuenta con ese rol desde el formulario (el combo de roles solo ofrece Recepcionista y Supervisor).
 
 ## Roles de usuario
 
-| Rol | Acceso |
-|---|---|
-| Administración | Todas las funcionalidades, incluida Gestión de Personal |
-| Supervisor / Recepcionista | Registrar Envío, Consultar Tracking, Actualizar Estado, Estadísticas |
+| Rol | Registrar / Consultar / Actualizar | Estadísticas y Listar Envíos | Gestión de Personal — Personal de Entrega | Gestión de Personal — Usuarios del Sistema |
+|---|---|---|---|---|
+| Recepcionista | Sí | No (botones deshabilitados) | No | No |
+| Supervisor | Sí | Sí | Sí (agregar/eliminar couriers) | No (no ve la pestaña) |
+| Administrador | Sí | Sí | Sí | Sí (única cuenta que puede crear/eliminar usuarios del sistema; su propia cuenta nunca se puede eliminar ni duplicar) |
+
+## Interfaz
+
+- **Login** — pantalla con estética retrowave: logo y formulario en una tarjeta translúcida sobre un banner de ciudad al atardecer que se panea lentamente de un lado a otro.
+- **Menú Principal** — fondo con foto de almacén; título, nombre de usuario y rol en texto de color sobre la imagen; botones de navegación en forma de píldora, habilitados o deshabilitados según el rol.
+- El resto de pantallas (Registrar Envío, Consultar Tracking, Actualizar Estado, Estadísticas, Listar Envíos, Gestión de Personal) mantiene la apariencia por defecto de Swing.
+- Las imágenes usadas (logo y fondos) están en `MavenProject/src/main/resources/img`.
 
 ## Cómo ejecutarlo
 
@@ -66,7 +70,7 @@ mysql -u root -p < FlashCourier.sql
 
 ### 2. Configurar la conexión
 
-Por defecto, `ConexionDB` se conecta a `localhost:3306` con usuario `root` y sin contraseña. Si tu MySQL usa otras credenciales, edítalas en:
+Por defecto, `ConexionDB` se conecta a `localhost:3306` con usuario `root` y sin contraseña. Antes de compilar, revisa las credenciales en:
 
 ```
 MavenProject/src/main/java/com/flashcourier/mavenproject/database/ConexionDB.java
@@ -80,12 +84,12 @@ Desde la carpeta `MavenProject` (con Maven instalado):
 mvn compile exec:java
 ```
 
-También se puede abrir con NetBeans o con Visual Studio Code + la extensión *Extension Pack for Java* (opcional, no requerido).
+También se puede abrir con NetBeans o con Visual Studio Code + la extensión *Extension Pack for Java*.
 
 ### Credenciales de prueba
 
 | Correo | Contraseña | Rol |
 |---|---|---|
-| admin@flashcourier.pe | admin | Administración |
-| recepcion@flashcourier.pe | 1234 | Recepcionista |
+| admin@flashcourier.pe | admin | Administrador |
 | supervisor@flashcourier.pe | 1234 | Supervisor |
+| recepcion@flashcourier.pe | 1234 | Recepcionista |

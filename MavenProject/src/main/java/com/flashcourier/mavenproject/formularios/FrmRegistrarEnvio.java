@@ -40,7 +40,7 @@ public class FrmRegistrarEnvio extends JFrame {
     private final JTextField txtDescripcion = new JTextField(18);
 
     public FrmRegistrarEnvio() {
-        setTitle("Registrar Envio - Flash Courier");
+        setTitle("Registrar Envío - Flash Courier");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(520, 560);
         setLocationRelativeTo(null);
@@ -50,22 +50,22 @@ public class FrmRegistrarEnvio extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
         panel.add(seccion("Datos del Remitente",
-                new String[]{"Nombres:", "DNI:", "Telefono:", "Direccion:"},
+                new String[]{"Nombres:", "DNI:", "Teléfono:", "Dirección:"},
                 new JTextField[]{txtRemNombres, txtRemDni, txtRemTelefono, txtRemDireccion}));
 
         panel.add(Box.createVerticalStrut(10));
 
         panel.add(seccion("Datos del Destinatario",
-                new String[]{"Nombres:", "DNI:", "Telefono:", "Direccion de entrega:"},
+                new String[]{"Nombres:", "DNI:", "Teléfono:", "Dirección de entrega:"},
                 new JTextField[]{txtDestNombres, txtDestDni, txtDestTelefono, txtDestDireccion}));
 
         panel.add(Box.createVerticalStrut(10));
 
         panel.add(seccion("Datos del Paquete",
-                new String[]{"Peso (kg):", "Dimensiones:", "Descripcion:"},
+                new String[]{"Peso (kg):", "Dimensiones:", "Descripción:"},
                 new JTextField[]{txtPeso, txtDimensiones, txtDescripcion}));
 
-        JButton btnRegistrar = new JButton("Registrar Envio");
+        JButton btnRegistrar = new JButton("Registrar Envío");
         btnRegistrar.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(Box.createVerticalStrut(15));
         panel.add(btnRegistrar);
@@ -99,7 +99,7 @@ public class FrmRegistrarEnvio extends JFrame {
             try {
                 peso = Double.parseDouble(txtPeso.getText().trim());
             } catch (NumberFormatException nfe) {
-                JOptionPane.showMessageDialog(this, "El peso debe ser un numero valido.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "El peso debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -115,7 +115,7 @@ public class FrmRegistrarEnvio extends JFrame {
             dispose();
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al registrar el envio:\n" + ex.getMessage(),
+            JOptionPane.showMessageDialog(this, "Error al registrar el envío:\n" + ex.getMessage(),
                     "Error de base de datos", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -131,12 +131,12 @@ public class FrmRegistrarEnvio extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JLabel lblOk = new JLabel("Envio registrado correctamente.");
+        JLabel lblOk = new JLabel("Envío registrado correctamente.");
         lblOk.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(lblOk);
         panel.add(Box.createVerticalStrut(15));
 
-        JLabel lblEtiquetaCodigo = new JLabel("Codigo de seguimiento:");
+        JLabel lblEtiquetaCodigo = new JLabel("Código de seguimiento:");
         lblEtiquetaCodigo.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(lblEtiquetaCodigo);
         panel.add(Box.createVerticalStrut(5));
@@ -150,7 +150,7 @@ public class FrmRegistrarEnvio extends JFrame {
         btnCopiar.addActionListener(e -> {
             StringSelection seleccion = new StringSelection(envio.getCodigoTracking());
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(seleccion, null);
-            btnCopiar.setText("Copiado!");
+            btnCopiar.setText("¡Copiado!");
         });
         panelCodigo.add(txtCodigo, BorderLayout.CENTER);
         panelCodigo.add(btnCopiar, BorderLayout.EAST);

@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     nombre VARCHAR(100) NOT NULL,
     correo VARCHAR(100) NOT NULL UNIQUE,
     contrasena VARCHAR(255) NOT NULL,
-    rol VARCHAR(50) NOT NULL, -- 'Recepcionista', 'Operario', 'Supervisor', 'Courier', 'Administracion'
+    rol VARCHAR(50) NOT NULL, -- 'Recepcionista', 'Operario', 'Supervisor', 'Courier', 'Administrador'
     PRIMARY KEY (id_usuario)
 );
 
@@ -209,12 +209,12 @@ BEGIN
         (SELECT COUNT(*) FROM courier) AS total_couriers;
 END //
 
--- 14. Listar el personal que usa la app (Recepcionista, Supervisor, Administracion)
+-- 14. Listar el personal que usa la app (Recepcionista, Supervisor, Administrador)
 CREATE PROCEDURE sp_listar_usuarios()
 BEGIN
     SELECT id_usuario, nombre, correo, rol
     FROM usuario
-    ORDER BY FIELD(rol, 'Administracion') DESC, nombre ASC;
+    ORDER BY FIELD(rol, 'Administrador') DESC, nombre ASC;
 END //
 
 -- 15. Registrar un nuevo usuario de la app (Gestion de Personal, solo admin)
@@ -227,11 +227,11 @@ BEGIN
     SET p_id_usuario = LAST_INSERT_ID();
 END //
 
--- 16. Eliminar un usuario de la app. La cuenta con rol Administracion queda
+-- 16. Eliminar un usuario de la app. La cuenta con rol Administrador queda
 --     protegida a nivel de base de datos (nunca se borra, ni por error).
 CREATE PROCEDURE sp_eliminar_usuario(IN p_id_usuario INT)
 BEGIN
-    DELETE FROM usuario WHERE id_usuario = p_id_usuario AND rol <> 'Administracion';
+    DELETE FROM usuario WHERE id_usuario = p_id_usuario AND rol <> 'Administrador';
 END //
 
 -- 17. Listar todos los envios con el courier asignado (si tiene), para la
@@ -257,10 +257,11 @@ DELIMITER ;
 -- DATOS DE PRUEBA
 -- =====================================================================
 INSERT INTO usuario (nombre, correo, contrasena, rol) VALUES
-('Alizon Ramos', 'recepcion@flashcourier.pe', '1234', 'Recepcionista'),
-('Jose Sanchez', 'supervisor@flashcourier.pe', '1234', 'Supervisor'),
-('Admin', 'admin@flashcourier.pe', 'admin', 'Administracion');
+('Admin', 'admin@flashcourier.pe', 'admin', 'Administrador'),
+('José Sánchez', 'supervisor@flashcourier.pe', '1234', 'Supervisor'),
+('Alizon Ramos', 'recepcion@flashcourier.pe', '1234', 'Recepcionista');
 
 INSERT INTO courier (nombre, telefono) VALUES
 ('Jhonatan Flores', '964218863'),
-('Abbiel Siguenas', '953350326');
+('Augusto Corrales', '940336633'),
+('Abbiel Sigueñas', '953350326');

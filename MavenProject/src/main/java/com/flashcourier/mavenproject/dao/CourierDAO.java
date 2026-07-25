@@ -34,7 +34,7 @@ public class CourierDAO {
         return lista;
     }
 
-    /** Registra un nuevo courier (personal de entrega). Usado por Gestion de Personal (solo admin). */
+    /** Registra un nuevo courier (personal de entrega). Usado por Gestion de Personal (Administrador y Supervisor). */
     public Courier registrarCourier(String nombre, String telefono) throws SQLException {
         try (Connection con = ConexionDB.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall("{call sp_registrar_courier(?,?,?)}")) {

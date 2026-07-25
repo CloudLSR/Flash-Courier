@@ -20,7 +20,7 @@ public class EstadoColores {
     public static final Map<String, Color> COLORES_ESTADO = new LinkedHashMap<>();
     static {
         COLORES_ESTADO.put("Registrado", new Color(96, 165, 250));   // celeste
-        COLORES_ESTADO.put("En Almacen", new Color(250, 204, 21));   // amarillo
+        COLORES_ESTADO.put("En Almacén", new Color(250, 204, 21));   // amarillo
         COLORES_ESTADO.put("En Ruta", new Color(251, 146, 60));      // naranja
         COLORES_ESTADO.put("En Reparto", new Color(167, 139, 250));  // lila
         COLORES_ESTADO.put("Entregado", new Color(74, 222, 128));    // verde

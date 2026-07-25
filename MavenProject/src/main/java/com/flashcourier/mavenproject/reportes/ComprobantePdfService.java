@@ -54,18 +54,18 @@ public class ComprobantePdfService {
                 cs.setFont(PDType1Font.HELVETICA, 11);
                 cs.beginText();
                 cs.newLineAtOffset(MARGEN_X, y);
-                cs.showText("Comprobante de seguimiento de envio");
+                cs.showText("Comprobante de seguimiento de envío");
                 cs.endText();
                 y -= 22;
 
                 y = linea(cs, y, anchoUtil);
                 y -= 15;
 
-                y = campo(cs, y, "Codigo de tracking:", envio.getCodigoTracking());
+                y = campo(cs, y, "Código de tracking:", envio.getCodigoTracking());
                 y = campo(cs, y, "Fecha de registro:", envio.getFechaRegistro() != null ? FORMATO_FECHA.format(envio.getFechaRegistro()) : "-");
                 y = campo(cs, y, "Estado actual:", envio.getEstado());
-                y = campo(cs, y, "Costo del envio:", "S/ " + String.format("%.2f", envio.getCosto()));
-                y = campo(cs, y, "Courier asignado:", envio.getNombreCourier() != null ? envio.getNombreCourier() : "Aun sin asignar (pedido en curso)");
+                y = campo(cs, y, "Costo del envío:", "S/ " + String.format("%.2f", envio.getCosto()));
+                y = campo(cs, y, "Courier asignado:", envio.getNombreCourier() != null ? envio.getNombreCourier() : "Aún sin asignar (pedido en curso)");
 
                 y -= 6;
                 cs.setFont(PDType1Font.HELVETICA_BOLD, 11);
@@ -73,8 +73,8 @@ public class ComprobantePdfService {
                 y -= 15;
                 y = campo(cs, y, "Nombre:", envio.getNombreRemitente());
                 y = campo(cs, y, "DNI:", envio.getDniRemitente());
-                y = campo(cs, y, "Telefono:", envio.getTelefonoRemitente());
-                y = campo(cs, y, "Direccion:", envio.getDireccionRemitente());
+                y = campo(cs, y, "Teléfono:", envio.getTelefonoRemitente());
+                y = campo(cs, y, "Dirección:", envio.getDireccionRemitente());
 
                 y -= 6;
                 cs.setFont(PDType1Font.HELVETICA_BOLD, 11);
@@ -82,8 +82,8 @@ public class ComprobantePdfService {
                 y -= 15;
                 y = campo(cs, y, "Nombre:", envio.getNombreDestinatario());
                 y = campo(cs, y, "DNI:", envio.getDniDestinatario());
-                y = campo(cs, y, "Telefono:", envio.getTelefonoDestinatario());
-                y = campo(cs, y, "Direccion:", envio.getDireccionDestino());
+                y = campo(cs, y, "Teléfono:", envio.getTelefonoDestinatario());
+                y = campo(cs, y, "Dirección:", envio.getDireccionDestino());
 
                 y -= 6;
                 cs.setFont(PDType1Font.HELVETICA_BOLD, 11);
@@ -91,7 +91,7 @@ public class ComprobantePdfService {
                 y -= 15;
                 y = campo(cs, y, "Peso:", String.format("%.2f kg", envio.getPeso()));
                 y = campo(cs, y, "Dimensiones:", envio.getDimensiones());
-                y = campo(cs, y, "Descripcion:", envio.getDescripcionPaquete());
+                y = campo(cs, y, "Descripción:", envio.getDescripcionPaquete());
 
                 y -= 8;
                 y = linea(cs, y, anchoUtil);
@@ -109,7 +109,7 @@ public class ComprobantePdfService {
                 cs.setFont(PDType1Font.HELVETICA_BOLD, 10);
                 texto(cs, colEstado, y, "Estado");
                 texto(cs, colFecha, y, "Fecha y hora");
-                texto(cs, colObs, y, "Observacion");
+                texto(cs, colObs, y, "Observación");
                 y -= 6;
                 y = linea(cs, y, anchoUtil);
                 y -= 14;
@@ -137,7 +137,7 @@ public class ComprobantePdfService {
 
                 y -= 20;
                 cs.setFont(PDType1Font.HELVETICA_OBLIQUE, 8);
-                texto(cs, MARGEN_X, Math.max(y, 40), "Comprobante generado automaticamente por el sistema Flash Courier.");
+                texto(cs, MARGEN_X, Math.max(y, 40), "Comprobante generado automáticamente por el sistema Flash Courier.");
             }
 
             doc.save(destino);
