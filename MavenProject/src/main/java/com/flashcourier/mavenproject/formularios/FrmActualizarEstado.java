@@ -41,8 +41,8 @@ public class FrmActualizarEstado extends JFrame {
     // cada vez que cambia el estado destino, pero la casilla sigue siendo
     // editable por si se quiere precisar algo puntual.
     private static final java.util.Map<String, String> TEXTOS_PREDEFINIDOS = java.util.Map.of(
-            "En Almacen", "Paquete recibido y almacenado en el centro de distribucion.",
-            "En Ruta", "Paquete en ruta hacia la direccion de destino.",
+            "En Almacén", "Paquete recibido y almacenado en el centro de distribución.",
+            "En Ruta", "Paquete en ruta hacia la dirección de destino.",
             "En Reparto", "Paquete asignado a un courier y en reparto.",
             "Entregado", "Paquete entregado satisfactoriamente al destinatario.",
             "Cancelado", "Pedido cancelado."
@@ -61,7 +61,7 @@ public class FrmActualizarEstado extends JFrame {
     private Envio envioActual;
 
     public FrmActualizarEstado() {
-        setTitle("Actualizar Estado de Envio - Flash Courier");
+        setTitle("Actualizar Estado de Envío - Flash Courier");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(560, 400);
         setLocationRelativeTo(null);
@@ -76,7 +76,7 @@ public class FrmActualizarEstado extends JFrame {
 
         JButton btnBuscar = new JButton("Buscar");
 
-        c.gridx = 0; c.gridy = 0; panel.add(new JLabel("Codigo de tracking:"), c);
+        c.gridx = 0; c.gridy = 0; panel.add(new JLabel("Código de tracking:"), c);
         c.gridx = 1; panel.add(txtCodigo, c);
         c.gridx = 2; panel.add(btnBuscar, c);
 
@@ -95,7 +95,7 @@ public class FrmActualizarEstado extends JFrame {
         c.gridx = 1; c.gridy = 4; c.gridwidth = 2;
         panel.add(chkCancelar, c); c.gridwidth = 1;
 
-        c.gridx = 0; c.gridy = 5; panel.add(new JLabel("Observacion:"), c);
+        c.gridx = 0; c.gridy = 5; panel.add(new JLabel("Observación:"), c);
         c.gridx = 1; c.gridwidth = 2; panel.add(txtObservacion, c); c.gridwidth = 1;
 
         c.gridx = 1; c.gridy = 6; c.gridwidth = 2;
@@ -160,13 +160,13 @@ public class FrmActualizarEstado extends JFrame {
     private void buscar() {
         String codigo = txtCodigo.getText().trim();
         if (codigo.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingresa un codigo de tracking.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Ingresa un código de tracking.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
             return;
         }
         try {
             envioActual = facade.envios().consultarTracking(codigo);
             if (envioActual == null) {
-                JOptionPane.showMessageDialog(this, "No se encontro un envio con ese codigo.", "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No se encontró un envío con ese código.", "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
                 envioActual = null;
                 refrescarVistaSegunEstado();
                 return;
@@ -175,7 +175,7 @@ public class FrmActualizarEstado extends JFrame {
             chkCancelar.setSelected(false);
             refrescarVistaSegunEstado();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al buscar el envio:\n" + ex.getMessage(),
+            JOptionPane.showMessageDialog(this, "Error al buscar el envío:\n" + ex.getMessage(),
                     "Error de base de datos", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -203,7 +203,7 @@ public class FrmActualizarEstado extends JFrame {
             // Entregado o Cancelado: el envio queda visible para consulta/historial,
             // pero ya no admite mas cambios. El courier se deja fijo, de referencia
             // (si llego a asignarse antes de cancelar, por ejemplo).
-            lblSiguienteEstado.setText("(este envio ya no puede actualizarse: " + envioActual.getEstado() + ")");
+            lblSiguienteEstado.setText("(este envío ya no puede actualizarse: " + envioActual.getEstado() + ")");
             bloquearCourier(envioActual.getIdCourier());
             chkCancelar.setSelected(false);
             chkCancelar.setEnabled(false);
@@ -255,12 +255,12 @@ public class FrmActualizarEstado extends JFrame {
         try {
             if (chkCancelar.isSelected()) {
                 if (observacion.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Ingresa un motivo de cancelacion en Observacion.",
+                    JOptionPane.showMessageDialog(this, "Ingresa un motivo de cancelación en Observación.",
                             "Dato requerido", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 facade.envios().cancelarEnvio(envioActual.getIdEnvio(), observacion);
-                JOptionPane.showMessageDialog(this, "El pedido fue cancelado.", "Cancelacion registrada", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "El pedido fue cancelado.", "Cancelación registrada", JOptionPane.INFORMATION_MESSAGE);
                 dispose();
                 return;
             }
@@ -270,16 +270,16 @@ public class FrmActualizarEstado extends JFrame {
             if (ESTADO_ASIGNACION_COURIER.equals(siguiente)) {
                 Courier courier = (Courier) cmbCourier.getSelectedItem();
                 if (courier == null) {
-                    JOptionPane.showMessageDialog(this, "Selecciona el courier que hara el reparto.",
+                    JOptionPane.showMessageDialog(this, "Selecciona el courier que hará el reparto.",
                             "Dato requerido", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 facade.envios().asignarCourierYAvanzar(envioActual.getIdEnvio(), courier.getIdCourier(), siguiente, observacion);
                 JOptionPane.showMessageDialog(this, "Estado actualizado a: " + siguiente + ". Courier asignado: " + courier.getNombre(),
-                        "Actualizacion exitosa", JOptionPane.INFORMATION_MESSAGE);
+                        "Actualización exitosa", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 facade.envios().actualizarEstado(envioActual.getIdEnvio(), siguiente, observacion);
-                JOptionPane.showMessageDialog(this, "Estado actualizado a: " + siguiente, "Actualizacion exitosa", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Estado actualizado a: " + siguiente, "Actualización exitosa", JOptionPane.INFORMATION_MESSAGE);
             }
             dispose();
         } catch (SQLException ex) {

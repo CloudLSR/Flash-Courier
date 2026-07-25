@@ -19,22 +19,22 @@ import java.util.List;
  * Gestion de Personal - pantalla con dos pestanas, visibilidad segun rol:
  * 1) Personal de Entrega (couriers): agregar/eliminar, aparecen disponibles
  *    al confirmar una entrega desde Actualizar Estado.
- *    Visible para Administracion y Supervisor.
+ *    Visible para Administrador y Supervisor.
  * 2) Usuarios del Sistema: cuentas de acceso a la app (Recepcionista/Supervisor).
- *    La cuenta con rol Administracion siempre aparece listada, pero nunca se
+ *    La cuenta con rol Administrador siempre aparece listada, pero nunca se
  *    puede eliminar (bloqueado tanto en la interfaz como en la base de datos).
- *    Visible SOLO para Administracion: crear/eliminar cuentas de acceso es una
+ *    Visible SOLO para Administrador: crear/eliminar cuentas de acceso es una
  *    funcion de seguridad que no se delega al Supervisor.
  *
  * El boton que abre esta pantalla ya viene deshabilitado para Recepcionista
- * desde FrmMenu, asi que esta clase solo distingue entre Administracion y
+ * desde FrmMenu, asi que esta clase solo distingue entre Administrador y
  * Supervisor.
  *
  * @author JoseLSR
  */
 public class FrmGestionPersonal extends JFrame {
 
-    private static final String ROL_ADMIN = "Administracion";
+    private static final String ROL_ADMIN = "Administrador";
 
     private final CourierFacade facade = new CourierFacade();
     private final Usuario usuarioActual;
@@ -43,7 +43,7 @@ public class FrmGestionPersonal extends JFrame {
         this.usuarioActual = usuarioActual;
         boolean esAdmin = ROL_ADMIN.equalsIgnoreCase(usuarioActual.getRol());
 
-        setTitle("Gestion de Personal - Flash Courier");
+        setTitle("Gestión de Personal - Flash Courier");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(680, 560);
         setLocationRelativeTo(null);
@@ -51,7 +51,7 @@ public class FrmGestionPersonal extends JFrame {
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Personal de Entrega", crearPanelCouriers());
         if (esAdmin) {
-            // Solo Administracion gestiona las cuentas de acceso al sistema
+            // Solo Administrador gestiona las cuentas de acceso al sistema
             // (Recepcionista/Supervisor). El Supervisor ni siquiera ve esta pestana.
             tabs.addTab("Usuarios del Sistema", crearPanelUsuarios());
         }
@@ -63,7 +63,7 @@ public class FrmGestionPersonal extends JFrame {
     // Pestana 1: Personal de Entrega (couriers)
     // ------------------------------------------------------------------
     private JPanel crearPanelCouriers() {
-        DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Nombre", "Telefono"}, 0) {
+        DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Nombre", "Teléfono"}, 0) {
             @Override public boolean isCellEditable(int row, int column) { return false; }
         };
         JTable tabla = new JTable(model);
@@ -104,7 +104,7 @@ public class FrmGestionPersonal extends JFrame {
         panelForm.add(txtNombre, gbc);
 
         gbc.gridx = 2; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
-        panelForm.add(new JLabel("Telefono:"), gbc);
+        panelForm.add(new JLabel("Teléfono:"), gbc);
         gbc.gridx = 3; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1;
         panelForm.add(txtTelefono, gbc);
 
@@ -149,7 +149,7 @@ public class FrmGestionPersonal extends JFrame {
             int idCourier = (int) model.getValueAt(fila, 0);
             String nombre = (String) model.getValueAt(fila, 1);
             int confirmacion = JOptionPane.showConfirmDialog(this, "¿Eliminar a " + nombre + "?",
-                    "Confirmar eliminacion", JOptionPane.YES_NO_OPTION);
+                    "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
             if (confirmacion != JOptionPane.YES_OPTION) return;
             try {
                 // No se puede borrar un courier con un pedido en proceso (todavia
@@ -157,8 +157,8 @@ public class FrmGestionPersonal extends JFrame {
                 // estado final, o si nunca tuvo ninguno, si se puede eliminar.
                 if (facade.envios().tieneEnviosEnProceso(idCourier)) {
                     JOptionPane.showMessageDialog(this,
-                            nombre + " tiene un envio en proceso todavia.\nEspera a que se marque como Entregado o Cancelado para poder eliminarlo.",
-                            "Accion no permitida", JOptionPane.WARNING_MESSAGE);
+                            nombre + " tiene un envío en proceso todavía.\nEspera a que se marque como Entregado o Cancelado para poder eliminarlo.",
+                            "Acción no permitida", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 facade.eliminarCourier(idCourier);
@@ -176,7 +176,7 @@ public class FrmGestionPersonal extends JFrame {
 
     // ------------------------------------------------------------------
     // Pestana 2: Usuarios del Sistema (cuentas de acceso a la app)
-    // Solo llega a construirse cuando el usuario actual es Administracion.
+    // Solo llega a construirse cuando el usuario actual es Administrador.
     // ------------------------------------------------------------------
     private JPanel crearPanelUsuarios() {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Nombre", "Correo", "Rol"}, 0) {
@@ -195,7 +195,7 @@ public class FrmGestionPersonal extends JFrame {
                 model.setRowCount(0);
                 for (Usuario u : usuarios) model.addRow(new Object[]{u.getIdUsuario(), u.getNombre(), u.getCorreo(), u.getRol()});
                 lblMensaje.setForeground(Color.DARK_GRAY);
-                lblMensaje.setText("Total: " + usuarios.size() + " usuario(s). La cuenta Administracion no puede eliminarse.");
+                lblMensaje.setText("Total: " + usuarios.size() + " usuario(s). La cuenta Administrador no puede eliminarse.");
             } catch (SQLException ex) {
                 lblMensaje.setForeground(Color.RED);
                 lblMensaje.setText("Error al cargar los usuarios: " + ex.getMessage());
@@ -229,7 +229,7 @@ public class FrmGestionPersonal extends JFrame {
         panelForm.add(txtCorreo, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
-        panelForm.add(new JLabel("Contrasena:"), gbc);
+        panelForm.add(new JLabel("Contraseña:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1;
         panelForm.add(txtContrasena, gbc);
 
@@ -258,7 +258,7 @@ public class FrmGestionPersonal extends JFrame {
             String contrasena = new String(txtContrasena.getPassword());
             String rol = (String) cmbRol.getSelectedItem();
             if (nombre.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Completa nombre, correo y contrasena.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Completa nombre, correo y contraseña.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             try {
@@ -281,14 +281,14 @@ public class FrmGestionPersonal extends JFrame {
             }
             String rol = (String) model.getValueAt(fila, 3);
             if (ROL_ADMIN.equalsIgnoreCase(rol)) {
-                JOptionPane.showMessageDialog(this, "La cuenta de Administracion no se puede eliminar.",
-                        "Accion no permitida", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "La cuenta de Administrador no se puede eliminar.",
+                        "Acción no permitida", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             int idUsuario = (int) model.getValueAt(fila, 0);
             String nombre = (String) model.getValueAt(fila, 1);
-            int confirmacion = JOptionPane.showConfirmDialog(this, "¿Eliminar a " + nombre + "? Ya no podra iniciar sesion.",
-                    "Confirmar eliminacion", JOptionPane.YES_NO_OPTION);
+            int confirmacion = JOptionPane.showConfirmDialog(this, "¿Eliminar a " + nombre + "? Ya no podrá iniciar sesión.",
+                    "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
             if (confirmacion != JOptionPane.YES_OPTION) return;
             try {
                 facade.eliminarUsuario(idUsuario);

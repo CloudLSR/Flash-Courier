@@ -59,7 +59,7 @@ public class EnvioDAO {
                 idEnvio = cs.getInt(7);
             }
 
-            historialDAO.registrarHistorial(con, idEnvio, "Registrado", "Envio registrado en agencia");
+            historialDAO.registrarHistorial(con, idEnvio, "Registrado", "Envío registrado en agencia");
 
             con.commit();
 

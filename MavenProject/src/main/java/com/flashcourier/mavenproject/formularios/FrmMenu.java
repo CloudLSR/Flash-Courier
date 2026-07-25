@@ -23,7 +23,7 @@ public class FrmMenu extends JFrame {
 
     public FrmMenu(Usuario usuario) {
         this.usuario = usuario;
-        setTitle("Flash Courier - Menu Principal");
+        setTitle("Flash Courier - Menú Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(560, 520);
         setLocationRelativeTo(null);
@@ -70,7 +70,7 @@ public class FrmMenu extends JFrame {
         bgc.gridwidth = 1;
         int fila = 0;
 
-        JButton btnRegistrar = crearBoton("Registrar Envio");
+        JButton btnRegistrar = crearBoton("Registrar Envío");
         btnRegistrar.addActionListener(e -> abrir(new FrmRegistrarEnvio()));
         bgc.gridy = fila++;
         panelBotones.add(btnRegistrar, bgc);
@@ -90,31 +90,31 @@ public class FrmMenu extends JFrame {
         //   ni Gestion de Personal.
         // - Supervisor: todo lo del Recepcionista + Estadisticas + Gestion de Personal
         //   (pero solo la pestana de Personal de Entrega, ver FrmGestionPersonal).
-        // - Administracion: acceso total, incluyendo Usuarios del Sistema.
-        boolean esAdmin = "Administracion".equalsIgnoreCase(usuario.getRol());
+        // - Administrador: acceso total, incluyendo Usuarios del Sistema.
+        boolean esAdmin = "Administrador".equalsIgnoreCase(usuario.getRol());
         boolean esSupervisor = "Supervisor".equalsIgnoreCase(usuario.getRol());
         boolean puedeVerEstadisticas = esAdmin || esSupervisor;
         boolean puedeGestionarPersonal = esAdmin || esSupervisor;
 
         // Estadisticas: bloqueada para Recepcionista (aparece "apagada" en vez de
         // ocultarse, igual que Gestion de Personal).
-        JButton btnEstadisticas = crearBoton("Estadisticas");
+        JButton btnEstadisticas = crearBoton("Estadísticas");
         btnEstadisticas.setEnabled(puedeVerEstadisticas);
         if (!puedeVerEstadisticas) {
-            btnEstadisticas.setToolTipText("Solo disponible para Supervisor y Administracion");
+            btnEstadisticas.setToolTipText("Solo disponible para Supervisor y Administrador");
         }
         btnEstadisticas.addActionListener(e -> abrir(new FrmEstadisticas()));
         bgc.gridy = fila++;
         panelBotones.add(btnEstadisticas, bgc);
 
         // Gestion de Personal: el boton siempre esta visible, pero solo se habilita
-        // para Supervisor y Administracion. Para Recepcionista aparece deshabilitado
+        // para Supervisor y Administrador. Para Recepcionista aparece deshabilitado
         // ("apagado") en vez de ocultarse. Dentro de la pantalla, FrmGestionPersonal
         // decide segun el rol si muestra 1 o 2 pestanas.
-        JButton btnPersonal = crearBoton("Gestion de Personal");
+        JButton btnPersonal = crearBoton("Gestión de Personal");
         btnPersonal.setEnabled(puedeGestionarPersonal);
         if (!puedeGestionarPersonal) {
-            btnPersonal.setToolTipText("Solo disponible para Supervisor y Administracion");
+            btnPersonal.setToolTipText("Solo disponible para Supervisor y Administrador");
         }
         btnPersonal.addActionListener(e -> abrir(new FrmGestionPersonal(usuario)));
         bgc.gridy = fila++;
@@ -122,7 +122,7 @@ public class FrmMenu extends JFrame {
 
         main.add(panelBotones, BorderLayout.CENTER);
 
-        JButton btnCerrarSesion = new JButton("Cerrar Sesion");
+        JButton btnCerrarSesion = new JButton("Cerrar Sesión");
         btnCerrarSesion.addActionListener(e -> cerrarSesion());
         final Color rojoNormal = new Color(0xD9, 0x3A, 0x3A);
         final Color rojoHover = new Color(0xE8, 0x5A, 0x5A);

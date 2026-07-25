@@ -69,7 +69,7 @@ public class FrmConsultarTracking extends JFrame {
     private final JLabel lblDescripcion = new JLabel("-");
 
     private final DefaultTableModel modeloTabla = new DefaultTableModel(
-            new Object[]{"Estado", "Fecha y Hora", "Observacion"}, 0) {
+            new Object[]{"Estado", "Fecha y Hora", "Observación"}, 0) {
         @Override public boolean isCellEditable(int row, int column) { return false; }
     };
     private final JButton btnDescargarPdf = new JButton("Descargar Comprobante (PDF)");
@@ -83,15 +83,15 @@ public class FrmConsultarTracking extends JFrame {
         setResizable(true);
 
         JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelBusqueda.add(new JLabel("Codigo de seguimiento:"));
+        panelBusqueda.add(new JLabel("Código de seguimiento:"));
         panelBusqueda.add(txtCodigo);
         JButton btnBuscar = new JButton("Consultar");
         panelBusqueda.add(btnBuscar);
 
         // Columna izquierda: datos del envio + del paquete.
         JPanel panelEnvio = new JPanel(new GridLayout(5, 2, 5, 4));
-        panelEnvio.setBorder(BorderFactory.createTitledBorder("Datos del Envio"));
-        panelEnvio.add(new JLabel("Codigo de tracking:")); panelEnvio.add(lblCodigo);
+        panelEnvio.setBorder(BorderFactory.createTitledBorder("Datos del Envío"));
+        panelEnvio.add(new JLabel("Código de tracking:")); panelEnvio.add(lblCodigo);
         panelEnvio.add(new JLabel("Fecha de registro:")); panelEnvio.add(lblFechaRegistro);
         panelEnvio.add(new JLabel("Estado actual:")); panelEnvio.add(lblEstado);
         panelEnvio.add(new JLabel("Costo:")); panelEnvio.add(lblCosto);
@@ -101,7 +101,7 @@ public class FrmConsultarTracking extends JFrame {
         panelPaquete.setBorder(BorderFactory.createTitledBorder("Datos del Paquete"));
         panelPaquete.add(new JLabel("Peso:")); panelPaquete.add(lblPeso);
         panelPaquete.add(new JLabel("Dimensiones:")); panelPaquete.add(lblDimensiones);
-        panelPaquete.add(new JLabel("Descripcion:")); panelPaquete.add(lblDescripcion);
+        panelPaquete.add(new JLabel("Descripción:")); panelPaquete.add(lblDescripcion);
 
         JPanel columnaIzquierda = new JPanel();
         columnaIzquierda.setLayout(new BoxLayout(columnaIzquierda, BoxLayout.Y_AXIS));
@@ -113,15 +113,15 @@ public class FrmConsultarTracking extends JFrame {
         panelRemitente.setBorder(BorderFactory.createTitledBorder("Datos del Remitente"));
         panelRemitente.add(new JLabel("Nombre:")); panelRemitente.add(lblRemNombre);
         panelRemitente.add(new JLabel("DNI:")); panelRemitente.add(lblRemDni);
-        panelRemitente.add(new JLabel("Telefono:")); panelRemitente.add(lblRemTelefono);
-        panelRemitente.add(new JLabel("Direccion:")); panelRemitente.add(lblRemDireccion);
+        panelRemitente.add(new JLabel("Teléfono:")); panelRemitente.add(lblRemTelefono);
+        panelRemitente.add(new JLabel("Dirección:")); panelRemitente.add(lblRemDireccion);
 
         JPanel panelDestinatario = new JPanel(new GridLayout(4, 2, 5, 4));
         panelDestinatario.setBorder(BorderFactory.createTitledBorder("Datos del Destinatario"));
         panelDestinatario.add(new JLabel("Nombre:")); panelDestinatario.add(lblDestNombre);
         panelDestinatario.add(new JLabel("DNI:")); panelDestinatario.add(lblDestDni);
-        panelDestinatario.add(new JLabel("Telefono:")); panelDestinatario.add(lblDestTelefono);
-        panelDestinatario.add(new JLabel("Direccion:")); panelDestinatario.add(lblDestDireccion);
+        panelDestinatario.add(new JLabel("Teléfono:")); panelDestinatario.add(lblDestTelefono);
+        panelDestinatario.add(new JLabel("Dirección:")); panelDestinatario.add(lblDestDireccion);
 
         JPanel columnaDerecha = new JPanel();
         columnaDerecha.setLayout(new BoxLayout(columnaDerecha, BoxLayout.Y_AXIS));
@@ -143,7 +143,7 @@ public class FrmConsultarTracking extends JFrame {
         // sobra esperando filas que nunca llegan.
         tabla.setPreferredScrollableViewportSize(new Dimension(620, FILAS_HISTORIAL * tabla.getRowHeight()));
         JScrollPane scrollTabla = new JScrollPane(tabla);
-        scrollTabla.setBorder(BorderFactory.createTitledBorder("Historial de Movimientos (maximo 5, uno por estado)"));
+        scrollTabla.setBorder(BorderFactory.createTitledBorder("Historial de Movimientos (máximo 5, uno por estado)"));
         // Se fija el alto maximo al preferido para que, si se agranda la
         // ventana, el espacio extra no lo absorba la tabla sin necesidad.
         scrollTabla.setMaximumSize(new Dimension(Integer.MAX_VALUE,
@@ -181,13 +181,13 @@ public class FrmConsultarTracking extends JFrame {
     private void consultar() {
         String codigo = txtCodigo.getText().trim();
         if (codigo.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingresa un codigo de seguimiento.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Ingresa un código de seguimiento.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
             return;
         }
         try {
             Envio envio = facade.envios().consultarTracking(codigo);
             if (envio == null) {
-                JOptionPane.showMessageDialog(this, "No se encontro ningun envio con ese codigo.", "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No se encontró ningún envío con ese código.", "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
                 limpiar();
                 return;
             }
@@ -203,7 +203,7 @@ public class FrmConsultarTracking extends JFrame {
             // manos, no hay a quien hacer responsable todavia.
             String nombreCourier = resolverNombreCourier(envio.getIdCourier());
             envio.setNombreCourier(nombreCourier);
-            lblCourierAsignado.setText(nombreCourier == null ? "Aun sin asignar (pedido en curso)" : nombreCourier);
+            lblCourierAsignado.setText(nombreCourier == null ? "Aún sin asignar (pedido en curso)" : nombreCourier);
 
             lblRemNombre.setText(valor(envio.getNombreRemitente()));
             lblRemDni.setText(valor(envio.getDniRemitente()));
@@ -223,7 +223,7 @@ public class FrmConsultarTracking extends JFrame {
             llenarTabla(historialActual);
             btnDescargarPdf.setEnabled(true);
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al consultar el envio:\n" + ex.getMessage(),
+            JOptionPane.showMessageDialog(this, "Error al consultar el envío:\n" + ex.getMessage(),
                     "Error de base de datos", JOptionPane.ERROR_MESSAGE);
         }
     }

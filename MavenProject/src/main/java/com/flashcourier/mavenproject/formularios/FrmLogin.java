@@ -26,7 +26,7 @@ public class FrmLogin extends JFrame {
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
 
     public FrmLogin() {
-        setTitle("Flash Courier - Iniciar Sesion");
+        setTitle("Flash Courier - Iniciar Sesión");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(460, 520);
         setLocationRelativeTo(null);
@@ -62,7 +62,7 @@ public class FrmLogin extends JFrame {
         c.insets = new Insets(4, 6, 2, 6);
         tarjeta.add(lblTitulo, c);
 
-        JLabel lblSubtitulo = new JLabel("Panel de gestion de envios", SwingConstants.CENTER);
+        JLabel lblSubtitulo = new JLabel("Panel de gestión de envíos", SwingConstants.CENTER);
         lblSubtitulo.setFont(Tema.fuenteTextoItalica(12));
         lblSubtitulo.setForeground(Tema.CIAN);
         c.gridy = 2;
@@ -81,7 +81,7 @@ public class FrmLogin extends JFrame {
         c.gridy = 4;
         tarjeta.add(txtCorreo, c);
 
-        JLabel lblPass = new JLabel("Contrasena");
+        JLabel lblPass = new JLabel("Contraseña");
         lblPass.setForeground(Tema.TEXTO_TENUE);
         lblPass.setFont(Tema.fuenteTexto(12));
         c.gridy = 5;
@@ -115,7 +115,7 @@ public class FrmLogin extends JFrame {
         String pass = new String(txtPassword.getPassword());
 
         if (correo.isEmpty() || pass.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingresa correo y contrasena.", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Ingresa correo y contraseña.", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -129,8 +129,8 @@ public class FrmLogin extends JFrame {
             dispose();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this,
-                "No se pudo conectar a la base de datos.\nVerifica que MySQL este corriendo en el puerto 3306.\n\n" + ex.getMessage(),
-                "Error de conexion", JOptionPane.ERROR_MESSAGE);
+                "No se pudo conectar a la base de datos.\nVerifica que MySQL esté corriendo en el puerto 3306.\n\n" + ex.getMessage(),
+                "Error de conexión", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

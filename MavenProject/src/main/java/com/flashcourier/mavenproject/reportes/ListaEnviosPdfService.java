@@ -50,7 +50,7 @@ public class ListaEnviosPdfService {
 
             if (envios == null || envios.isEmpty()) {
                 cs.setFont(PDType1Font.HELVETICA, 10);
-                texto(cs, MARGEN_X, y, "No hay envios registrados.");
+                texto(cs, MARGEN_X, y, "No hay envíos registrados.");
             } else {
                 cs.setFont(PDType1Font.HELVETICA, 9);
                 for (Envio e : envios) {
@@ -78,7 +78,7 @@ public class ListaEnviosPdfService {
 
     private float escribirEncabezado(PDPageContentStream cs, PDPage page, float y, float anchoUtil) throws IOException {
         cs.setFont(PDType1Font.HELVETICA_BOLD, 16);
-        texto(cs, MARGEN_X, y, "FLASH COURIER - Lista de Envios");
+        texto(cs, MARGEN_X, y, "FLASH COURIER - Lista de Envíos");
         y -= 22;
 
         cs.setLineWidth(0.6f);

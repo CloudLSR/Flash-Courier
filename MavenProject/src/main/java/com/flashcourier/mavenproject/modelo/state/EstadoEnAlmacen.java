@@ -10,7 +10,7 @@ package com.flashcourier.mavenproject.modelo.state;
  */
 public class EstadoEnAlmacen implements EstadoEnvio {
     @Override
-    public String getNombre() { return "En Almacen"; }
+    public String getNombre() { return "En Almacén"; }
 
     @Override
     public EstadoEnvio siguienteEstado() { return new EstadoEnRuta(); }
