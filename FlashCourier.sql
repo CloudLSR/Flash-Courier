@@ -257,10 +257,11 @@ DELIMITER ;
 -- DATOS DE PRUEBA
 -- =====================================================================
 INSERT INTO usuario (nombre, correo, contrasena, rol) VALUES
-('Alizon Ramos', 'recepcion@flashcourier.pe', '1234', 'Recepcionista'),
-('Jose Sanchez', 'supervisor@flashcourier.pe', '1234', 'Supervisor'),
-('Admin', 'admin@flashcourier.pe', 'admin', 'Administracion');
+('Admin', 'admin@flashcourier.pe', 'admin', 'Administrador'),
+('José Sánchez', 'supervisor@flashcourier.pe', '1234', 'Supervisor'),
+('Alizon Ramos', 'recepcion@flashcourier.pe', '1234', 'Recepcionista');
 
 INSERT INTO courier (nombre, telefono) VALUES
 ('Jhonatan Flores', '964218863'),
-('Abbiel Siguenas', '953350326');
+('Augusto Corrales', '940336633'),
+('Abbiel Sigueñas', '953350326');
