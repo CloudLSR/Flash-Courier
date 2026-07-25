@@ -5,6 +5,7 @@
 package com.flashcourier.mavenproject.formularios;
 
 import com.flashcourier.mavenproject.modelo.Usuario;
+import com.flashcourier.mavenproject.ui.BotonPill;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,14 +31,17 @@ public class FrmMenu extends JFrame {
 
         JPanel main = new JPanel(new BorderLayout(10, 10));
         main.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        main.setOpaque(false);
 
         JPanel panelBienvenida = new JPanel(new GridBagLayout());
+        panelBienvenida.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(2, 5, 2, 5);
 
         JLabel lblTitulo = new JLabel("FLASH COURIER", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("SansSerif", Font.BOLD, 22));
+        lblTitulo.setForeground(Color.WHITE);
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -45,18 +49,20 @@ public class FrmMenu extends JFrame {
 
         JLabel lblBienvenido = new JLabel("Bienvenido, " + usuario.getNombre(), SwingConstants.CENTER);
         lblBienvenido.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        lblBienvenido.setForeground(new Color(0xFF, 0xE1, 0x66));
         gbc.gridy = 1;
         panelBienvenida.add(lblBienvenido, gbc);
 
         JLabel lblRol = new JLabel("Rol: " + usuario.getRol(), SwingConstants.CENTER);
         lblRol.setFont(new Font("SansSerif", Font.ITALIC, 12));
-        lblRol.setForeground(Color.GRAY);
+        lblRol.setForeground(new Color(0x9A, 0xE6, 0x6A));
         gbc.gridy = 2;
         panelBienvenida.add(lblRol, gbc);
 
         main.add(panelBienvenida, BorderLayout.NORTH);
 
         JPanel panelBotones = new JPanel(new GridBagLayout());
+        panelBotones.setOpaque(false);
         GridBagConstraints bgc = new GridBagConstraints();
         bgc.fill = GridBagConstraints.HORIZONTAL;
         bgc.insets = new Insets(8, 20, 8, 20);
@@ -118,18 +124,46 @@ public class FrmMenu extends JFrame {
 
         JButton btnCerrarSesion = new JButton("Cerrar Sesion");
         btnCerrarSesion.addActionListener(e -> cerrarSesion());
+        final Color rojoNormal = new Color(0xD9, 0x3A, 0x3A);
+        final Color rojoHover = new Color(0xE8, 0x5A, 0x5A);
+        final Color rojoPresionado = new Color(0xB8, 0x2A, 0x2A);
+        btnCerrarSesion.setBackground(rojoNormal);
+        btnCerrarSesion.setForeground(Color.WHITE);
+        btnCerrarSesion.setOpaque(true);
+        btnCerrarSesion.setBorderPainted(false);
+        btnCerrarSesion.setFocusPainted(false);
+        btnCerrarSesion.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                btnCerrarSesion.setBackground(rojoHover);
+            }
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                btnCerrarSesion.setBackground(rojoNormal);
+            }
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                btnCerrarSesion.setBackground(rojoPresionado);
+            }
+            @Override
+            public void mouseReleased(java.awt.event.MouseEvent e) {
+                btnCerrarSesion.setBackground(btnCerrarSesion.contains(e.getPoint()) ? rojoHover : rojoNormal);
+            }
+        });
         JPanel panelSur = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panelSur.setOpaque(false);
         panelSur.add(btnCerrarSesion);
         main.add(panelSur, BorderLayout.SOUTH);
 
-        add(main);
+        PanelConFondo fondo = new PanelConFondo("/img/banner-menu.png");
+        fondo.add(main, BorderLayout.CENTER);
+        setContentPane(fondo);
     }
 
     private JButton crearBoton(String texto) {
-        JButton btn = new JButton(texto);
+        BotonPill btn = new BotonPill(texto);
         btn.setFont(new Font("SansSerif", Font.PLAIN, 14));
         btn.setPreferredSize(new Dimension(250, 40));
-        btn.setFocusPainted(false);
         return btn;
     }
 
