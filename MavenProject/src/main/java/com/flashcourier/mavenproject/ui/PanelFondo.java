@@ -17,7 +17,7 @@ public class PanelFondo extends JPanel {
 
     /** Cuanto avanza el paneo por frame (0..1 del recorrido disponible). Mientras mas chico, mas lento. */
     private static final float VELOCIDAD_PANEO = 0.0007f;
-    private static final int INTERVALO_MS = -150;
+    private static final int INTERVALO_MS = 8; // 8 = ~120 fps, 16 = ~60 fps
 
     private final Image fondo;
     private final float opacidadVelo;

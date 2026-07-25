@@ -47,14 +47,14 @@ public class FrmMenu extends JFrame {
         gbc.gridwidth = 2;
         panelBienvenida.add(lblTitulo, gbc);
 
-        JLabel lblBienvenido = new JLabel("Bienvenido, " + usuario.getNombre(), SwingConstants.CENTER);
-        lblBienvenido.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        JLabel lblBienvenido = new JLabel("Bienvenido(a), " + usuario.getNombre(), SwingConstants.CENTER);
+        lblBienvenido.setFont(new Font("SansSerif", Font.BOLD, 14));
         lblBienvenido.setForeground(new Color(0xFF, 0xE1, 0x66));
         gbc.gridy = 1;
         panelBienvenida.add(lblBienvenido, gbc);
 
         JLabel lblRol = new JLabel("Rol: " + usuario.getRol(), SwingConstants.CENTER);
-        lblRol.setFont(new Font("SansSerif", Font.ITALIC, 12));
+        lblRol.setFont(new Font("SansSerif", Font.BOLD | Font.ITALIC, 12));
         lblRol.setForeground(new Color(0x9A, 0xE6, 0x6A));
         gbc.gridy = 2;
         panelBienvenida.add(lblRol, gbc);
