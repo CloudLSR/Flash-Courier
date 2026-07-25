@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS envio (
     id_envio INT NOT NULL AUTO_INCREMENT,
     codigo_tracking VARCHAR(50) NOT NULL UNIQUE,
     fecha_registro DATETIME NOT NULL,
-    estado VARCHAR(50) NOT NULL, -- Registrado, En Almacen, En Ruta, En Reparto, Entregado
+    estado VARCHAR(50) NOT NULL, -- Registrado, En Almacen, En Ruta, En Reparto, Entregado, Cancelado
     direccion_destino VARCHAR(255) NOT NULL,
     costo DECIMAL(10,2) NOT NULL,
     id_remitente INT NOT NULL,
@@ -151,8 +151,11 @@ END //
 CREATE PROCEDURE sp_consultar_envio_por_tracking(IN p_codigo_tracking VARCHAR(50))
 BEGIN
     SELECT e.id_envio, e.codigo_tracking, e.fecha_registro, e.estado, e.direccion_destino,
-           e.costo, r.nombres AS remitente, d.nombres AS destinatario,
-           p.peso, p.dimensiones, e.id_courier
+           e.costo,
+           r.nombres AS remitente, r.dni AS remitente_dni, r.telefono AS remitente_telefono, r.direccion AS remitente_direccion,
+           d.nombres AS destinatario, d.dni AS destinatario_dni, d.telefono AS destinatario_telefono,
+           p.peso, p.dimensiones, p.descripcion AS descripcion_paquete,
+           e.id_courier
     FROM envio e
     JOIN cliente r ON e.id_remitente = r.id_cliente
     JOIN cliente d ON e.id_destinatario = d.id_cliente
@@ -173,6 +176,79 @@ END //
 CREATE PROCEDURE sp_listar_couriers()
 BEGIN
     SELECT id_courier, nombre, telefono FROM courier;
+END //
+
+-- 10. Registrar un nuevo courier (personal de entrega)
+CREATE PROCEDURE sp_registrar_courier(
+    IN p_nombre VARCHAR(100), IN p_telefono VARCHAR(20),
+    OUT p_id_courier INT)
+BEGIN
+    INSERT INTO courier(nombre, telefono) VALUES (p_nombre, p_telefono);
+    SET p_id_courier = LAST_INSERT_ID();
+END //
+
+-- 11. Eliminar un courier (solo si no tiene entregas asociadas, por la FK)
+CREATE PROCEDURE sp_eliminar_courier(IN p_id_courier INT)
+BEGIN
+    DELETE FROM courier WHERE id_courier = p_id_courier;
+END //
+
+-- 12. Contar envios agrupados por estado (para el dashboard de estadisticas)
+CREATE PROCEDURE sp_contar_envios_por_estado()
+BEGIN
+    SELECT estado, COUNT(*) AS cantidad FROM envio GROUP BY estado;
+END //
+
+-- 13. Resumen general para la pantalla de Estadisticas (total pedidos, ingresos
+--     estimados excluyendo cancelados, y total de couriers)
+CREATE PROCEDURE sp_estadisticas_generales()
+BEGIN
+    SELECT
+        (SELECT COUNT(*) FROM envio) AS total_envios,
+        (SELECT IFNULL(SUM(costo), 0) FROM envio WHERE estado <> 'Cancelado') AS ingresos_estimados,
+        (SELECT COUNT(*) FROM courier) AS total_couriers;
+END //
+
+-- 14. Listar el personal que usa la app (Recepcionista, Supervisor, Administracion)
+CREATE PROCEDURE sp_listar_usuarios()
+BEGIN
+    SELECT id_usuario, nombre, correo, rol
+    FROM usuario
+    ORDER BY FIELD(rol, 'Administracion') DESC, nombre ASC;
+END //
+
+-- 15. Registrar un nuevo usuario de la app (Gestion de Personal, solo admin)
+CREATE PROCEDURE sp_registrar_usuario(
+    IN p_nombre VARCHAR(100), IN p_correo VARCHAR(100),
+    IN p_contrasena VARCHAR(255), IN p_rol VARCHAR(50),
+    OUT p_id_usuario INT)
+BEGIN
+    INSERT INTO usuario(nombre, correo, contrasena, rol) VALUES (p_nombre, p_correo, p_contrasena, p_rol);
+    SET p_id_usuario = LAST_INSERT_ID();
+END //
+
+-- 16. Eliminar un usuario de la app. La cuenta con rol Administracion queda
+--     protegida a nivel de base de datos (nunca se borra, ni por error).
+CREATE PROCEDURE sp_eliminar_usuario(IN p_id_usuario INT)
+BEGIN
+    DELETE FROM usuario WHERE id_usuario = p_id_usuario AND rol <> 'Administracion';
+END //
+
+-- 17. Listar todos los envios con el courier asignado (si tiene), para la
+--     pantalla de detalle completo ("Ver detalle de todos los envios")
+CREATE PROCEDURE sp_listar_envios()
+BEGIN
+    SELECT e.id_envio, e.codigo_tracking, e.fecha_registro, e.estado,
+           e.direccion_destino, e.costo,
+           r.nombres AS nombre_remitente, d.nombres AS nombre_destinatario,
+           p.peso, p.dimensiones,
+           c.nombre AS nombre_courier
+    FROM envio e
+    JOIN cliente r ON e.id_remitente = r.id_cliente
+    JOIN cliente d ON e.id_destinatario = d.id_cliente
+    JOIN paquete p ON e.id_paquete = p.id_paquete
+    LEFT JOIN courier c ON e.id_courier = c.id_courier
+    ORDER BY e.fecha_registro DESC;
 END //
 
 DELIMITER ;

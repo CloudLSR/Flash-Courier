@@ -10,6 +10,7 @@ Aplicación de escritorio desarrollada para el curso de Análisis y Diseño de S
 - **Swing** — interfaz de escritorio
 - **MySQL 8** — persistencia, con [MySQL Connector/J 8.3.0](https://dev.mysql.com/downloads/connector/j/)
 - **JDBC** con procedimientos almacenados y transacciones manuales (`Connection.setAutoCommit(false)` + `commit()`/`rollback()`) para operaciones que tocan varias tablas a la vez
+- **Apache PDFBox 2.0.30** — generación de comprobantes y reportes en PDF
 
 ## Arquitectura y patrones de diseño
 
@@ -23,6 +24,8 @@ El proyecto sigue una arquitectura en capas (Vista → Facade → Controlador �
 | DAO | `dao` | Acceso a datos, cada uno invoca sus procedimientos almacenados |
 | Modelo | `modelo` | Entidades del dominio (POJOs) |
 | Base de datos | `database.ConexionDB` | Conexión JDBC (patrón Singleton) |
+| Reportes | `reportes` | Generación de PDFs (comprobante de envío y lista de envíos) con PDFBox |
+| Interfaz | `ui` | Paleta de colores, fondo y botón estilo retrowave, usados en el Login |
 
 Patrones de diseño aplicados:
 - **Singleton** — `ConexionDB`, una única instancia de conexión.
@@ -32,10 +35,17 @@ Patrones de diseño aplicados:
 ## Funcionalidades
 
 - **Registrar Envío** — captura remitente, destinatario y paquete; calcula el costo según el peso y genera un código de tracking único (con opción de copiarlo al portapapeles).
-- **Consultar Tracking** — búsqueda pública por código, con el historial completo de movimientos.
+- **Consultar Tracking** — búsqueda pública por código, con el historial completo de movimientos y descarga del comprobante en PDF.
 - **Actualizar Estado** — avanza un envío al siguiente estado válido; si el siguiente es "Entregado" pide asignar un courier; permite cancelar el pedido desde cualquier estado no terminal.
-- **Estadísticas** — total de pedidos, ingresos estimados (excluyendo cancelados), cantidad de personal de entrega, y detalle de todos los envíos.
+- **Estadísticas** — total de pedidos, ingresos estimados (excluyendo cancelados), cantidad de personal de entrega, y detalle de todos los envíos con exportación a PDF.
 - **Gestión de Personal** *(solo rol Administración)* — altas y bajas de couriers y de usuarios del sistema (Recepcionista/Supervisor); la cuenta de Administración nunca puede eliminarse.
+
+## Interfaz
+
+- **Login** — pantalla con estética retrowave: logo y formulario en una tarjeta translúcida sobre una ilustración de ciudad al atardecer.
+- **Menú Principal** — fondo con foto de almacén; título, nombre de usuario y rol en texto claro para mantener la legibilidad sobre la imagen.
+- El resto de pantallas (Registrar Envío, Consultar Tracking, Actualizar Estado, Estadísticas, Gestión de Personal, Listar Envíos) mantiene la apariencia por defecto de Swing.
+- Las imágenes usadas (logo y fondos) están en `MavenProject/src/main/resources/img`.
 
 ## Roles de usuario
 
