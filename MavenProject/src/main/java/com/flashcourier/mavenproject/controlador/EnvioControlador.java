@@ -9,11 +9,13 @@ import com.flashcourier.mavenproject.modelo.Cliente;
 import com.flashcourier.mavenproject.modelo.Envio;
 import com.flashcourier.mavenproject.modelo.HistorialEstado;
 import com.flashcourier.mavenproject.modelo.Paquete;
+import com.flashcourier.mavenproject.modelo.ResumenEstadisticas;
 import com.flashcourier.mavenproject.modelo.state.EstadoEnvio;
 import com.flashcourier.mavenproject.modelo.state.EstadoEnvioFactory;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -70,14 +72,42 @@ public class EnvioControlador {
         envioDAO.actualizarEstado(idEnvio, nuevoEstado, observacion);
     }
 
+    /** Asigna el courier y avanza de estado en un solo paso (ver detalle en EnvioDAO). */
+    public void asignarCourierYAvanzar(int idEnvio, int idCourier, String nuevoEstado, String observacion) throws SQLException {
+        envioDAO.asignarCourierYAvanzar(idEnvio, idCourier, nuevoEstado, observacion);
+    }
+
+    /** @deprecated ver EnvioDAO#confirmarEntrega */
+    @Deprecated
     public void confirmarEntrega(int idEnvio, int idCourier, String observacion) throws SQLException {
         envioDAO.confirmarEntrega(idEnvio, idCourier, observacion);
+    }
+
+    /** true si el courier tiene un envio que todavia no esta Entregado ni Cancelado. */
+    public boolean tieneEnviosEnProceso(int idCourier) throws SQLException {
+        return envioDAO.tieneEnviosEnProceso(idCourier);
     }
 
     public Envio buscarPorId(int idEnvio) throws SQLException {
         return envioDAO.buscarPorId(idEnvio);
     }
 
+    /** Cancela un envio (estado final alternativo, disponible desde cualquier estado no terminal). */
+    public void cancelarEnvio(int idEnvio, String observacion) throws SQLException {
+        envioDAO.actualizarEstado(idEnvio, "Cancelado", observacion);
+    }
+
+    /** Cuenta los envios por estado, para el dashboard de estadisticas. */
+    public Map<String, Integer> contarPorEstado() throws SQLException {
+        return envioDAO.contarPorEstado();
+    }
+
+    /** Resumen general (total de pedidos, ingresos estimados, total de couriers) para Estadisticas. */
+    public ResumenEstadisticas obtenerResumenEstadisticas() throws SQLException {
+        return envioDAO.obtenerResumen();
+    }
+
+    /** Lista todos los envios con courier asignado, para la pantalla de detalle completo. */
     public List<Envio> listarEnvios() throws SQLException {
         return envioDAO.listarTodos();
     }

@@ -16,6 +16,7 @@ public class EstadoEnvioFactory {
             case "En Ruta": return new EstadoEnRuta();
             case "En Reparto": return new EstadoEnReparto();
             case "Entregado": return new EstadoEntregado();
+            case "Cancelado": return new EstadoCancelado();
             default: return new EstadoRegistrado();
         }
     }
