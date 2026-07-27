@@ -175,7 +175,8 @@ END //
 -- 9. Listar couriers disponibles (para asignar en confirmar entrega)
 CREATE PROCEDURE sp_listar_couriers()
 BEGIN
-    SELECT id_courier, nombre, telefono FROM courier;
+    SELECT id_courier, nombre, telefono FROM courier
+    ORDER BY id_courier ASC;
 END //
 
 -- 10. Registrar un nuevo courier (personal de entrega)
@@ -214,7 +215,7 @@ CREATE PROCEDURE sp_listar_usuarios()
 BEGIN
     SELECT id_usuario, nombre, correo, rol
     FROM usuario
-    ORDER BY FIELD(rol, 'Administrador') DESC, nombre ASC;
+    ORDER BY id_usuario ASC;
 END //
 
 -- 15. Registrar un nuevo usuario de la app (Gestion de Personal, solo admin)
